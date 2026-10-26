@@ -19,6 +19,7 @@ import { Wallpaper, CategoryInfo } from "@/types/wallpaper";
 import WallpaperCard from "@/components/WallpaperCard";
 import WallpaperModal from "@/components/WallpaperModal";
 import FolderTree from "@/components/FolderTree";
+import MasonryGrid from "@/components/MasonryGrid";
 
 interface WallpaperGridProps {
   initialWallpapers: Wallpaper[];
@@ -671,21 +672,11 @@ export default function WallpaperGrid({
             </div>
           ) : (
             <>
-              <div
-                className={`grid gap-4 items-start ${
-                  gridDensity === "compact"
-                    ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
-                    : "grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4"
-                }`}
-              >
-                {visibleWallpapers.map((wp) => (
-                  <WallpaperCard
-                    key={wp.id}
-                    wallpaper={wp}
-                    onPreview={(w) => setActiveWallpaper(w)}
-                  />
-                ))}
-              </div>
+              <MasonryGrid
+                wallpapers={visibleWallpapers}
+                density={gridDensity}
+                onPreview={(w) => setActiveWallpaper(w)}
+              />
 
               {/* Load More Button - Family Sand Pill / Dark Pill */}
               {hasMore && (

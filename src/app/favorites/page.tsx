@@ -6,6 +6,7 @@ import { Heart, Trash2, ArrowRight } from "lucide-react";
 import { Wallpaper } from "@/types/wallpaper";
 import WallpaperCard from "@/components/WallpaperCard";
 import WallpaperModal from "@/components/WallpaperModal";
+import MasonryGrid from "@/components/MasonryGrid";
 
 export default function FavoritesPage() {
   const [favorites, setFavorites] = useState<Wallpaper[]>([]);
@@ -101,15 +102,10 @@ export default function FavoritesPage() {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {favorites.map((wp) => (
-            <WallpaperCard
-              key={wp.id}
-              wallpaper={wp}
-              onPreview={(w) => setActiveWallpaper(w)}
-            />
-          ))}
-        </div>
+        <MasonryGrid
+          wallpapers={favorites}
+          onPreview={(w) => setActiveWallpaper(w)}
+        />
       )}
 
       {/* Lightbox Modal */}

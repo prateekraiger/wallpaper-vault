@@ -114,22 +114,25 @@ export default function WallpaperCard({ wallpaper, onPreview }: WallpaperCardPro
 
   const isDesktop = wallpaper.device === "Desktop";
   const isSquare = wallpaper.device === "Square & Avatars";
-  const aspectClass = isDesktop
-    ? "aspect-video"
-    : isSquare
-    ? "aspect-square"
-    : "aspect-[9/16]";
+  const naturalRatio = wallpaper.width && wallpaper.height
+    ? wallpaper.width / wallpaper.height
+    : (isDesktop ? 16 / 9 : isSquare ? 1 : 9 / 16);
+  // Clamp ratio between 0.56 (tall portrait) and 2.35 (ultrawide landscape)
+  const clampedRatio = Math.max(0.56, Math.min(2.35, naturalRatio));
 
   return (
     <div
       onClick={() => onPreview(wallpaper)}
-      className="group relative rounded-[10px] overflow-hidden bg-white cursor-pointer flex flex-col self-start w-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]"
+      className="group relative rounded-[10px] overflow-hidden bg-white cursor-pointer flex flex-col self-start w-full transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]"
       style={{
         boxShadow: "inset 0 0 0 1px #f2f0ed",
       }}
     >
       {/* Aspect Ratio Box with Warm Stone Background */}
-      <div className={`w-full relative ${aspectClass} overflow-hidden bg-[#f2f0ed]`}>
+      <div 
+        className="w-full relative overflow-hidden bg-[#f2f0ed]"
+        style={{ aspectRatio: `${clampedRatio}` }}
+      >
         {/* Skeleton pulse behind image while loading */}
         {!loaded && !hasError && (
           <div className="absolute inset-0 bg-[#f2f0ed] flex flex-col items-center justify-center p-2 text-center select-none animate-pulse">
