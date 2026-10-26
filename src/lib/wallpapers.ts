@@ -32,6 +32,20 @@ export function getWallpapersByCategory(slug: string): Wallpaper[] {
   return getAllWallpapers().filter((w) => w.categorySlug === slug);
 }
 
+export function getWallpapersBySubcategory(slug: string): Wallpaper[] {
+  return getAllWallpapers().filter((w) => w.subcategorySlug === slug);
+}
+
+export function getWallpapersByVibe(vibe: string): Wallpaper[] {
+  return getAllWallpapers().filter((w) => w.vibe === vibe);
+}
+
+export function getRandomWallpaper(): Wallpaper {
+  const all = getAllWallpapers();
+  const index = Math.floor(Math.random() * all.length);
+  return all[index];
+}
+
 export function getWallpapersByDevice(device: string): Wallpaper[] {
   const norm = device.toLowerCase();
   return getAllWallpapers().filter((w) => {
@@ -44,6 +58,8 @@ export function getWallpapersByDevice(device: string): Wallpaper[] {
 
 export interface FilterOptions {
   category?: string;
+  subcategory?: string;
+  vibe?: string;
   device?: string;
   search?: string;
   orientation?: string;
@@ -57,6 +73,8 @@ export interface FilterOptions {
 export function queryWallpapers(options: FilterOptions) {
   const {
     category,
+    subcategory,
+    vibe,
     device,
     search,
     orientation,
@@ -88,6 +106,18 @@ export function queryWallpapers(options: FilterOptions) {
     );
   }
 
+  // Filter by Subcategory
+  if (subcategory && subcategory !== "all") {
+    results = results.filter(
+      (w) => w.subcategorySlug === subcategory || w.subcategory === subcategory
+    );
+  }
+
+  // Filter by Vibe
+  if (vibe && vibe !== "all") {
+    results = results.filter((w) => w.vibe === vibe);
+  }
+
   // Filter by Orientation
   if (orientation && orientation !== "all") {
     results = results.filter((w) => w.orientation === orientation);
@@ -103,13 +133,15 @@ export function queryWallpapers(options: FilterOptions) {
     results = results.filter((w) => w.isAmoled);
   }
 
-  // Search keyword across title, tags, and category
+  // Search keyword across title, tags, category, subcategory, vibe
   if (search && search.trim()) {
     const q = search.toLowerCase().trim();
     results = results.filter((w) => {
       return (
         w.title.toLowerCase().includes(q) ||
         w.category.toLowerCase().includes(q) ||
+        (w.subcategory && w.subcategory.toLowerCase().includes(q)) ||
+        (w.vibe && w.vibe.toLowerCase().includes(q)) ||
         w.device.toLowerCase().includes(q) ||
         w.tags.some((t) => t.toLowerCase().includes(q))
       );

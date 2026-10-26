@@ -7,7 +7,12 @@ import {
   Layers, 
   FolderTree, 
   Download, 
-  CheckCircle2 
+  CheckCircle2,
+  Compass,
+  Zap,
+  Moon,
+  Coffee,
+  Palette
 } from "lucide-react";
 import { getAllWallpapers, getCategories, getDeviceCounts } from "@/lib/wallpapers";
 import WallpaperGrid from "@/components/WallpaperGrid";
@@ -16,6 +21,16 @@ export default function HomePage() {
   const allWallpapers = getAllWallpapers();
   const categories = getCategories();
   const deviceCounts = getDeviceCounts();
+
+  // Curated human mood collections
+  const moodPills = [
+    { name: "Late Night Focus", icon: "🌙", count: "751+", desc: "Pure black OLED & minimalist dark vibes" },
+    { name: "High Energy & Adrenaline", icon: "⚡", count: "450+", desc: "Supercars, drift legends & battle heroes" },
+    { name: "Zen & Serenity", icon: "🌿", count: "315+", desc: "Alpine peaks, calm oceans & misty pines" },
+    { name: "Cozy & Lo-Fi", icon: "☕", count: "230+", desc: "Rainy balconies & aesthetic warm rooms" },
+    { name: "Futuristic & Cyber", icon: "🔮", count: "280+", desc: "Neo-Tokyo towers & synthwave grids" },
+    { name: "Creative Spark", icon: "🎨", count: "2,000+", desc: "3D geometries & liquid fluid art" },
+  ];
 
   return (
     <div className="space-y-12">
@@ -42,7 +57,7 @@ export default function HomePage() {
 
           {/* Subtitle */}
           <p className="text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl mx-auto">
-            Discover thousands of stunning 4K and AMOLED wallpapers, systematically organized into dedicated folders for PC monitors, smartphones, and 10 visual themes.
+            Discover thousands of stunning 4K and AMOLED wallpapers, systematically organized into dedicated folders for PC monitors, smartphones, and 10 visual themes with subcategory navigation.
           </p>
 
           {/* Device Quick Stats Grid */}

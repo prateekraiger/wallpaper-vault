@@ -230,7 +230,9 @@ export default function WallpaperCard({ wallpaper, onPreview }: WallpaperCardPro
             {wallpaper.title}
           </p>
           <div className="flex items-center gap-1.5 text-[11px] text-gray-400 mt-0.5 truncate">
-            <span className="truncate">{wallpaper.category}</span>
+            <span className="truncate text-indigo-300/90 font-medium">
+              {wallpaper.subcategory || wallpaper.category}
+            </span>
             <span className="text-gray-600">•</span>
             <span className="font-mono text-gray-500 text-[10px] shrink-0">
               {wallpaper.aspectRatio}

@@ -5,6 +5,8 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
   const category = searchParams.get("category") || "all";
+  const subcategory = searchParams.get("subcategory") || "all";
+  const vibe = searchParams.get("vibe") || "all";
   const device = searchParams.get("device") || "all";
   const search = searchParams.get("search") || "";
   const orientation = searchParams.get("orientation") || "all";
@@ -16,6 +18,8 @@ export async function GET(request: NextRequest) {
 
   const result = queryWallpapers({
     category,
+    subcategory,
+    vibe,
     device,
     search,
     orientation,

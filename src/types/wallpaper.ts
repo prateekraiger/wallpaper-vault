@@ -1,8 +1,26 @@
+export interface SubcategoryInfo {
+  name: string;
+  slug: string;
+  description: string;
+  count: number;
+}
+
+export interface CategoryInfo {
+  name: string;
+  slug: string;
+  description: string;
+  count: number;
+  subcategories?: SubcategoryInfo[];
+}
+
 export interface Wallpaper {
   id: string;
   title: string;
   category: string;
   categorySlug: string;
+  subcategory?: string;
+  subcategorySlug?: string;
+  vibe?: string;
   device: "Desktop" | "Mobile" | "Square & Avatars";
   deviceSlug: string;
   filename: string;
@@ -23,13 +41,6 @@ export interface Wallpaper {
   isShowcase: boolean;
   thumbUrl: string;
   url: string;
-}
-
-export interface CategoryInfo {
-  name: string;
-  slug: string;
-  description: string;
-  count: number;
 }
 
 export interface WallpapersData {

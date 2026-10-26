@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useTransition } from "react";
 import { 
   Search, 
   Filter, 
@@ -16,7 +16,11 @@ import {
   Check,
   Palette,
   SlidersHorizontal,
-  LayoutGrid
+  LayoutGrid,
+  Dices,
+  Flame,
+  Heart,
+  Smile
 } from "lucide-react";
 import { Wallpaper, CategoryInfo } from "@/types/wallpaper";
 import WallpaperCard from "@/components/WallpaperCard";
@@ -28,6 +32,7 @@ interface WallpaperGridProps {
   categories: CategoryInfo[];
   defaultDevice?: "all" | "Desktop" | "Mobile" | "Square & Avatars";
   defaultCategory?: string;
+  defaultSubcategory?: string;
   title?: string;
   subtitle?: string;
 }
@@ -37,34 +42,73 @@ export default function WallpaperGrid({
   categories,
   defaultDevice = "all",
   defaultCategory = "all",
+  defaultSubcategory = "all",
   title,
   subtitle,
 }: WallpaperGridProps) {
   // Filter States
   const [selectedDevice, setSelectedDevice] = useState<string>(defaultDevice);
   const [selectedCategory, setSelectedCategory] = useState<string>(defaultCategory);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>(defaultSubcategory);
+  const [selectedVibe, setSelectedVibe] = useState<string>("all");
   const [selectedColor, setSelectedColor] = useState<string>("all");
-  const [searchQuery, setSearchQuery] = useState<string>("" );
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [only4K, setOnly4K] = useState<boolean>(false);
   const [onlyAmoled, setOnlyAmoled] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>("popular");
   const [displayCount, setDisplayCount] = useState<number>(36);
   const [showFolderSidebar, setShowFolderSidebar] = useState<boolean>(false);
   const [gridDensity, setGridDensity] = useState<"standard" | "compact">("standard");
+  const [isPending, startTransition] = useTransition();
 
   // Modal State
   const [activeWallpaper, setActiveWallpaper] = useState<Wallpaper | null>(null);
 
   // Available Color Palette Tones
   const colorTones = [
-    { name: "All", id: "all", bg: "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" },
-    { name: "Black / AMOLED", id: "dark", bg: "bg-black border border-white/20" },
-    { name: "Blue", id: "blue", bg: "bg-blue-600" },
-    { name: "Purple", id: "purple", bg: "bg-purple-600" },
-    { name: "Red", id: "red", bg: "bg-rose-600" },
-    { name: "Green", id: "green", bg: "bg-emerald-600" },
-    { name: "Amber", id: "amber", bg: "bg-amber-500" },
+    { name: "All Colors", id: "all", bg: "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" },
+    { name: "OLED Pitch Black", id: "dark", bg: "bg-black border border-white/20" },
+    { name: "Deep Blue", id: "blue", bg: "bg-blue-600" },
+    { name: "Cosmic Purple", id: "purple", bg: "bg-purple-600" },
+    { name: "Crimson Red", id: "red", bg: "bg-rose-600" },
+    { name: "Emerald Green", id: "green", bg: "bg-emerald-600" },
+    { name: "Solar Amber", id: "amber", bg: "bg-amber-500" },
   ];
+
+  // Human Emotional Vibes
+  const humanVibes = [
+    { name: "All Vibes", id: "all", icon: "✨" },
+    { name: "Late Night Focus", id: "Late Night Focus", icon: "🌙" },
+    { name: "High Energy & Adrenaline", id: "High Energy & Adrenaline", icon: "⚡" },
+    { name: "Zen & Serenity", id: "Zen & Serenity", icon: "🌿" },
+    { name: "Cozy & Lo-Fi", id: "Cozy & Lo-Fi", icon: "☕" },
+    { name: "Futuristic & Cyber", id: "Futuristic & Cyber", icon: "🔮" },
+    { name: "Creative Spark & Aesthetics", id: "Creative Spark & Aesthetics", icon: "🎨" },
+    { name: "Cosmic Wonder", id: "Cosmic Wonder", icon: "🚀" },
+  ];
+
+  // Find active category object to display subcategories
+  const activeCategoryObj = useMemo(() => {
+    if (selectedCategory === "all") return null;
+    return categories.find(
+      (c) => c.slug === selectedCategory || c.name.toLowerCase() === selectedCategory.toLowerCase()
+    );
+  }, [selectedCategory, categories]);
+
+  // Handle Search Input with non-blocking Transition
+  const handleSearchChange = (val: string) => {
+    startTransition(() => {
+      setSearchQuery(val);
+      setDisplayCount(36);
+    });
+  };
+
+  // Trigger "Surprise Me" Random Wallpaper
+  const handleSurpriseMe = () => {
+    if (filteredWallpapers.length === 0) return;
+    const randomIndex = Math.floor(Math.random() * filteredWallpapers.length);
+    setActiveWallpaper(filteredWallpapers[randomIndex]);
+  };
 
   // Filter & Sort Logic
   const filteredWallpapers = useMemo(() => {
@@ -80,6 +124,18 @@ export default function WallpaperGrid({
       result = result.filter(
         (w) => w.categorySlug === selectedCategory || w.category === selectedCategory
       );
+    }
+
+    // Subcategory filter
+    if (selectedSubcategory !== "all") {
+      result = result.filter(
+        (w) => w.subcategorySlug === selectedSubcategory || w.subcategory === selectedSubcategory
+      );
+    }
+
+    // Vibe filter
+    if (selectedVibe !== "all") {
+      result = result.filter((w) => w.vibe === selectedVibe);
     }
 
     // Color tone filter
@@ -113,6 +169,8 @@ export default function WallpaperGrid({
         return (
           w.title.toLowerCase().includes(q) ||
           w.category.toLowerCase().includes(q) ||
+          (w.subcategory && w.subcategory.toLowerCase().includes(q)) ||
+          (w.vibe && w.vibe.toLowerCase().includes(q)) ||
           w.device.toLowerCase().includes(q) ||
           w.tags.some((t) => t.toLowerCase().includes(q))
         );
@@ -139,6 +197,8 @@ export default function WallpaperGrid({
     initialWallpapers,
     selectedDevice,
     selectedCategory,
+    selectedSubcategory,
+    selectedVibe,
     selectedColor,
     only4K,
     onlyAmoled,
@@ -173,6 +233,8 @@ export default function WallpaperGrid({
   const resetFilters = () => {
     setSelectedDevice("all");
     setSelectedCategory("all");
+    setSelectedSubcategory("all");
+    setSelectedVibe("all");
     setSelectedColor("all");
     setSearchQuery("");
     setOnly4K(false);
@@ -186,8 +248,8 @@ export default function WallpaperGrid({
       {(title || subtitle) && (
         <div className="mb-8">
           {title && (
-            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              {title}
+            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-3">
+              <span>{title}</span>
             </h1>
           )}
           {subtitle && (
@@ -200,7 +262,7 @@ export default function WallpaperGrid({
 
       {/* Control Bar */}
       <div className="space-y-4 mb-8">
-        {/* Device Switcher Row */}
+        {/* Device Switcher & Quick Action Row */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
           <div className="flex items-center gap-1.5 p-1.5 rounded-2xl glass-panel border border-white/10 overflow-x-auto shadow-sm">
             <button
@@ -264,8 +326,19 @@ export default function WallpaperGrid({
             </button>
           </div>
 
-          {/* Action buttons (Folder toggle & Density) */}
+          {/* Action buttons (Surprise Me, Folder toggle & Density) */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* Surprise Me Button */}
+            <button
+              onClick={handleSurpriseMe}
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold bg-gradient-to-r from-amber-500/20 to-purple-500/20 hover:from-amber-500/30 hover:to-purple-500/30 text-amber-300 border border-amber-500/30 shadow-md shadow-amber-500/10 transition-all transform active:scale-95"
+              title="Pick a random wallpaper for me!"
+            >
+              <Dices className="w-4 h-4 text-amber-400 animate-bounce" />
+              <span>Surprise Me</span>
+            </button>
+
+            {/* Density toggle */}
             <button
               onClick={() => setGridDensity(gridDensity === "standard" ? "compact" : "standard")}
               className="p-2.5 rounded-xl glass-panel text-gray-300 hover:text-white border border-white/10 hidden md:flex items-center justify-center transition-colors"
@@ -274,6 +347,7 @@ export default function WallpaperGrid({
               <LayoutGrid className="w-4 h-4" />
             </button>
 
+            {/* Folder directory toggle */}
             <button
               onClick={() => setShowFolderSidebar(!showFolderSidebar)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold border transition-colors ${
@@ -283,7 +357,7 @@ export default function WallpaperGrid({
               }`}
             >
               <FolderTreeIcon className="w-4 h-4 text-indigo-400" />
-              <span>{showFolderSidebar ? "Hide Folders" : "Folder Directory"}</span>
+              <span>{showFolderSidebar ? "Hide Folders" : "Folders"}</span>
             </button>
           </div>
         </div>
@@ -295,14 +369,14 @@ export default function WallpaperGrid({
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search 4,800+ wallpapers by anime, car, nature, color, tags (e.g. Gojo, Porsche, Cyberpunk)..."
+              placeholder="Search by keywords, subcategory, mood, car, anime, color (e.g. Porsche, Neon Tokyo, Alpine, Cyberpunk)..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full pl-11 pr-10 py-3 rounded-2xl glass-panel border border-white/10 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-inner"
             />
             {searchQuery && (
               <button
-                onClick={() => setSearchQuery("")}
+                onClick={() => handleSearchChange("")}
                 className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1"
               >
                 <X className="w-4 h-4" />
@@ -313,7 +387,11 @@ export default function WallpaperGrid({
           {/* Category Dropdown */}
           <select
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={(e) => {
+              setSelectedCategory(e.target.value);
+              setSelectedSubcategory("all");
+              setDisplayCount(36);
+            }}
             className="px-4 py-3 rounded-2xl glass-panel border border-white/10 text-xs font-medium text-gray-200 bg-[#0a0f1d] focus:outline-none focus:border-indigo-500 cursor-pointer"
           >
             <option value="all">All Categories</option>
@@ -330,7 +408,7 @@ export default function WallpaperGrid({
             onChange={(e) => setSortBy(e.target.value)}
             className="px-4 py-3 rounded-2xl glass-panel border border-white/10 text-xs font-medium text-gray-200 bg-[#0a0f1d] focus:outline-none focus:border-indigo-500 cursor-pointer"
           >
-            <option value="popular">Popular & 4K</option>
+            <option value="popular">Curated Popular & 4K</option>
             <option value="resolution">Highest Resolution</option>
             <option value="size">Largest File Size</option>
             <option value="name">Name A-Z</option>
@@ -364,9 +442,36 @@ export default function WallpaperGrid({
           </div>
         </div>
 
+        {/* Human Emotional Mood / Vibe Filter Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <span className="text-[11px] font-bold text-indigo-300 flex items-center gap-1 pr-1 shrink-0">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Mood:
+          </span>
+          {humanVibes.map((vibe) => {
+            const isVibeActive = selectedVibe === vibe.id;
+            return (
+              <button
+                key={vibe.id}
+                onClick={() => {
+                  setSelectedVibe(vibe.id);
+                  setDisplayCount(36);
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap border transition-all ${
+                  isVibeActive
+                    ? "bg-indigo-600 text-white border-indigo-400 shadow-md shadow-indigo-600/30 font-bold"
+                    : "bg-white/5 border-white/5 text-gray-300 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                <span>{vibe.icon}</span>
+                <span>{vibe.name}</span>
+              </button>
+            );
+          })}
+        </div>
+
         {/* Color Tones Quick Bar */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <span className="text-[11px] font-bold text-gray-400 flex items-center gap-1 pr-1">
+          <span className="text-[11px] font-bold text-gray-400 flex items-center gap-1 pr-1 shrink-0">
             <Palette className="w-3.5 h-3.5 text-indigo-400" /> Palette:
           </span>
           {colorTones.map((tone) => {
@@ -374,8 +479,11 @@ export default function WallpaperGrid({
             return (
               <button
                 key={tone.id}
-                onClick={() => setSelectedColor(tone.id)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all ${
+                onClick={() => {
+                  setSelectedColor(tone.id);
+                  setDisplayCount(36);
+                }}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap border transition-all ${
                   isToneActive
                     ? "bg-white/15 border-white text-white font-bold"
                     : "bg-white/5 border-white/5 text-gray-400 hover:text-white"
@@ -388,10 +496,14 @@ export default function WallpaperGrid({
           })}
         </div>
 
-        {/* Category Horizon Tabs */}
+        {/* Top-Level Category Horizon Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
           <button
-            onClick={() => setSelectedCategory("all")}
+            onClick={() => {
+              setSelectedCategory("all");
+              setSelectedSubcategory("all");
+              setDisplayCount(36);
+            }}
             className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
               selectedCategory === "all"
                 ? "bg-white text-black font-bold shadow-md"
@@ -405,7 +517,11 @@ export default function WallpaperGrid({
             return (
               <button
                 key={cat.slug}
-                onClick={() => setSelectedCategory(cat.slug)}
+                onClick={() => {
+                  setSelectedCategory(cat.slug);
+                  setSelectedSubcategory("all");
+                  setDisplayCount(36);
+                }}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${
                   isActive
                     ? "bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-600/30"
@@ -418,6 +534,48 @@ export default function WallpaperGrid({
             );
           })}
         </div>
+
+        {/* Subcategory Pills Row (When a category is active) */}
+        {activeCategoryObj && activeCategoryObj.subcategories && activeCategoryObj.subcategories.length > 0 && (
+          <div className="p-3 rounded-2xl bg-indigo-950/20 border border-indigo-500/20 flex items-center gap-2 overflow-x-auto scrollbar-none animate-in fade-in duration-200">
+            <span className="text-[11px] font-bold text-indigo-300 shrink-0 uppercase tracking-wider pr-1">
+              Subcategories:
+            </span>
+            <button
+              onClick={() => {
+                setSelectedSubcategory("all");
+                setDisplayCount(36);
+              }}
+              className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+                selectedSubcategory === "all"
+                  ? "bg-indigo-600 text-white font-bold shadow-sm"
+                  : "bg-white/5 text-gray-400 hover:text-white border border-white/5"
+              }`}
+            >
+              All {activeCategoryObj.name}
+            </button>
+            {activeCategoryObj.subcategories.map((sub) => {
+              const isSubActive = selectedSubcategory === sub.slug;
+              return (
+                <button
+                  key={sub.slug}
+                  onClick={() => {
+                    setSelectedSubcategory(sub.slug);
+                    setDisplayCount(36);
+                  }}
+                  className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                    isSubActive
+                      ? "bg-indigo-600 text-white font-bold shadow-sm"
+                      : "bg-white/5 text-gray-300 hover:text-white hover:bg-white/10 border border-white/5"
+                  }`}
+                >
+                  <span>{sub.name}</span>
+                  <span className="text-[10px] font-mono opacity-70">({sub.count})</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Main Content Layout with optional Folder Tree Sidebar */}
@@ -431,6 +589,7 @@ export default function WallpaperGrid({
               onSelectFolder={(dev, cat) => {
                 setSelectedDevice(dev);
                 setSelectedCategory(cat);
+                setSelectedSubcategory("all");
               }}
             />
           </div>
@@ -445,11 +604,15 @@ export default function WallpaperGrid({
               <span className="font-bold text-white">{filteredWallpapers.length}</span> wallpapers
               {selectedDevice !== "all" && ` in ${selectedDevice}`}
               {selectedCategory !== "all" && ` / ${selectedCategory}`}
-              {selectedColor !== "all" && ` (${selectedColor} palette)`}
+              {selectedSubcategory !== "all" && ` (${selectedSubcategory})`}
+              {selectedVibe !== "all" && ` • Vibe: ${selectedVibe}`}
+              {selectedColor !== "all" && ` • ${selectedColor} palette`}
             </p>
 
             {(selectedDevice !== "all" ||
               selectedCategory !== "all" ||
+              selectedSubcategory !== "all" ||
+              selectedVibe !== "all" ||
               selectedColor !== "all" ||
               searchQuery ||
               only4K ||
@@ -466,20 +629,36 @@ export default function WallpaperGrid({
 
           {/* Grid of Cards */}
           {filteredWallpapers.length === 0 ? (
-            <div className="text-center py-20 rounded-3xl glass-panel border border-white/10 p-8">
-              <Sparkles className="w-10 h-10 text-gray-600 mx-auto mb-3" />
-              <h3 className="text-base font-bold text-white">
-                No wallpapers match your criteria
+            <div className="text-center py-20 rounded-3xl glass-panel border border-white/10 p-8 space-y-4">
+              <Sparkles className="w-10 h-10 text-indigo-400 mx-auto" />
+              <h3 className="text-lg font-bold text-white">
+                No wallpapers matched that exact combination
               </h3>
-              <p className="text-xs text-gray-400 mt-1 max-w-sm mx-auto">
-                Try searching with a broader keyword or reset your filters to browse the entire collection.
+              <p className="text-xs text-gray-400 max-w-sm mx-auto leading-relaxed">
+                Try loosening your filters or search for something popular like:
               </p>
-              <button
-                onClick={resetFilters}
-                className="mt-5 px-5 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors shadow-lg shadow-indigo-600/30"
-              >
-                Reset All Filters
-              </button>
+              <div className="flex flex-wrap justify-center gap-2 pt-1">
+                {["Neon Tokyo", "Alpine Peak", "McLaren", "OLED Deep Black", "Cyberpunk", "Ocean Wave"].map((k) => (
+                  <button
+                    key={k}
+                    onClick={() => {
+                      resetFilters();
+                      handleSearchChange(k);
+                    }}
+                    className="px-3 py-1 rounded-full text-xs bg-white/5 hover:bg-white/10 text-indigo-300 border border-white/10 transition-colors"
+                  >
+                    #{k}
+                  </button>
+                ))}
+              </div>
+              <div>
+                <button
+                  onClick={resetFilters}
+                  className="mt-4 px-6 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors shadow-lg shadow-indigo-600/30"
+                >
+                  Reset All Filters
+                </button>
+              </div>
             </div>
           ) : (
             <>
