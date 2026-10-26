@@ -15,6 +15,8 @@ import {
   Compass 
 } from "lucide-react";
 
+import LuminaLogo from "@/components/LuminaLogo";
+
 export default function Header() {
   const pathname = usePathname();
   const [favoriteCount, setFavoriteCount] = useState(0);
@@ -44,9 +46,9 @@ export default function Header() {
 
   const navLinks = [
     { name: "Explore", href: "/", icon: Compass },
-    { name: "Desktop", href: "/desktop", icon: Monitor, badge: "PC" },
-    { name: "Mobile", href: "/mobile", icon: Smartphone, badge: "Phone" },
-    { name: "Folders", href: "/folders", icon: FolderTree },
+    { name: "Desktop", href: "/desktop", icon: Monitor, badge: "4K" },
+    { name: "Mobile", href: "/mobile", icon: Smartphone, badge: "AMOLED" },
+    { name: "Categories", href: "/folders", icon: FolderTree },
     { 
       name: "Favorites", 
       href: "/favorites", 
@@ -57,26 +59,11 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full bg-[#fbfaf9]/95 backdrop-blur-md border-b border-[#f2f0ed]">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Storybook Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          {/* Hand-drawn storybook character icon */}
-          <div className="w-9 h-9 rounded-[10px] bg-[#121212] flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105">
-            <Layers className="w-4 h-4 text-white" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5 leading-none">
-              <span className="font-bold text-base tracking-tight text-[#121212]">
-                Family
-              </span>
-              <span className="text-[11px] font-semibold tracking-wider uppercase px-1.5 py-0.5 rounded-[4px] bg-[#f2f0ed] text-[#474645] border border-[#e5d5c3]">
-                Vault
-              </span>
-            </div>
-            <p className="text-[11px] text-[#7e7e7d] mt-0.5 font-normal">
-              4,891 Curated Wallpapers
-            </p>
-          </div>
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        {/* Lumina Brand Logo */}
+        <Link href="/" className="group" aria-label="Lumina Wallpapers Home">
+          <LuminaLogo size="md" className="hidden sm:flex" />
+          <LuminaLogo size="sm" showTagline={false} className="sm:hidden" />
         </Link>
 
         {/* Center Desktop Navigation - Ghost Buttons */}
@@ -117,8 +104,8 @@ export default function Header() {
             href="/folders"
             className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-[32px] text-[13px] font-medium text-[#343433] bg-[#f6f4ef] hover:bg-[#edeae2] border border-[#e5d5c3] transition-all"
           >
-            <FolderTree className="w-3.5 h-3.5 text-[#0086fc]" />
-            <span>Directories</span>
+            <FolderTree className="w-3.5 h-3.5 text-[#ff3e00]" />
+            <span>Categories</span>
           </Link>
 
           <a

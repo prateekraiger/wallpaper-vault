@@ -3,7 +3,7 @@ import { getAllWallpapers, getCategories } from "@/lib/wallpapers";
 import WallpaperGrid from "@/components/WallpaperGrid";
 
 export const metadata = {
-  title: "Mobile Wallpapers (Phone & AMOLED) — Wallpaper Vault",
+  title: "Mobile AMOLED Wallpapers · LUMINA",
   description:
     "Browse over 3,900 vertical 9:16 portrait wallpapers optimized for iPhone, Android, AMOLED lockscreens, and smartphones.",
 };

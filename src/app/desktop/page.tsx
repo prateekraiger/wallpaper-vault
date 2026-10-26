@@ -3,7 +3,7 @@ import { getAllWallpapers, getCategories } from "@/lib/wallpapers";
 import WallpaperGrid from "@/components/WallpaperGrid";
 
 export const metadata = {
-  title: "Desktop Wallpapers (4K Landscape) — Wallpaper Vault",
+  title: "Desktop 4K Wallpapers · LUMINA",
   description:
     "Explore ultra-wide, 4K UHD, and Full HD landscape wallpapers curated specifically for PC monitors, laptops, and dual-screen desktop setups.",
 };

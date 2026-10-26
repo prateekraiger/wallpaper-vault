@@ -184,11 +184,11 @@ export default function CategoryExplorer({
 
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="max-w-2xl">
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#121212] tracking-tight">
-              Wallpaper Categories & Themes
+            <h1 className="text-3xl sm:text-4xl font-black text-[#121212] tracking-tight">
+              Visual Themes & Collections
             </h1>
-            <p className="text-[14px] text-[#474645] mt-2 leading-relaxed">
-              Every wallpaper in the 4,891-item collection is cataloged into 10 thematic folders, 40+ human-curated subcategories, and 3 dedicated device form factors. Browse your favorite visual genre below.
+            <p className="text-[14px] text-[#474645] mt-1.5 leading-relaxed">
+              Curated across 10 signature aesthetics and 3 physical display form factors.
             </p>
           </div>
 

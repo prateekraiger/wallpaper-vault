@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Monitor, Smartphone, Heart, Layers, Folder, ArrowUpRight } from "lucide-react";
+import LuminaLogo from "@/components/LuminaLogo";
 
 export default function Footer() {
   const categories = [
@@ -22,24 +23,21 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           {/* Col 1: Brand & Bio */}
           <div className="space-y-4 md:col-span-1">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-[10px] bg-[#121212] flex items-center justify-center text-white shadow-xs">
-                <Layers className="w-4 h-4 text-white" />
-              </div>
-              <span className="font-bold text-[#121212] text-base tracking-tight">Family Vault</span>
-            </div>
+            <Link href="/" className="inline-block group">
+              <LuminaLogo size="md" />
+            </Link>
             <p className="text-[13px] leading-relaxed text-[#7e7e7d]">
-              A warm storybook collection of 4,891 high-resolution wallpapers, carefully cataloged into desktop, phone, and 10 thematic folders on parchment canvas.
+              Curated collection of 4,891 ultra-high-definition wallpapers across 10 signature themes and dual form factors.
             </p>
             <div className="flex items-center gap-2 pt-1 flex-wrap">
               <span className="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full bg-[#f2f0ed] text-[#474645] border border-[#e5d5c3]">
-                <Monitor className="w-3 h-3 text-[#0086fc]" /> Desktop
+                <Monitor className="w-3 h-3 text-[#ff3e00]" /> 4K Desktop
               </span>
               <span className="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full bg-[#f2f0ed] text-[#474645] border border-[#e5d5c3]">
-                <Smartphone className="w-3 h-3 text-[#ff58ae]" /> Mobile
+                <Smartphone className="w-3 h-3 text-[#ff58ae]" /> AMOLED Mobile
               </span>
               <span className="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full bg-[#ffbb26] text-[#121212] font-semibold">
-                4K UHD
+                UHD Master
               </span>
             </div>
           </div>
@@ -129,7 +127,7 @@ export default function Footer() {
 
         {/* Storybook Bottom Inset Bar */}
         <div className="pt-8 border-t border-[#f2f0ed] flex flex-col sm:flex-row items-center justify-between text-[12px] text-[#7e7e7d] gap-4">
-          <p>© {new Date().getFullYear()} Wallpaper Vault · Handcrafted in Family design language.</p>
+          <p>© {new Date().getFullYear()} LUMINA · Pure 4K Visual Artistry.</p>
           <p className="flex items-center gap-1 text-[#474645]">
             Built with Next.js 15, TypeScript & Tailwind CSS
           </p>

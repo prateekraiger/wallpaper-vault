@@ -16,6 +16,22 @@ export async function generateStaticParams() {
   }));
 }
 
+export async function generateMetadata({ params }: CategoryPageProps) {
+  const { slug } = await params;
+  const categories = getCategories();
+  const category = categories.find((c) => c.slug === slug);
+  if (!category) return { title: "Category Not Found · LUMINA" };
+
+  return {
+    title: `${category.name} 4K Wallpapers · LUMINA`,
+    description: `Explore ${category.count}+ ultra-high definition ${category.name} wallpapers curated for Desktop and Mobile on LUMINA.`,
+    openGraph: {
+      title: `${category.name} 4K Wallpapers · LUMINA`,
+      description: `${category.description} Handpicked for PC & AMOLED screens.`,
+    },
+  };
+}
+
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
   const categories = getCategories();
@@ -39,7 +55,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         </Link>
         <ChevronRight className="w-3 h-3 text-[#e5d5c3]" />
         <Link href="/folders" className="hover:text-[#121212] transition-colors">
-          Folders
+          Categories
         </Link>
         <ChevronRight className="w-3 h-3 text-[#e5d5c3]" />
         <span className="text-[#121212] font-semibold">{category.name}</span>

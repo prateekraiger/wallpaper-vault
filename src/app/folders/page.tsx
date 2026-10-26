@@ -3,7 +3,7 @@ import { getCategories, getDeviceCounts, getAllWallpapers } from "@/lib/wallpape
 import CategoryExplorer from "@/components/CategoryExplorer";
 
 export const metadata = {
-  title: "Wallpaper Categories & Themes — Wallpaper Vault",
+  title: "Categories & Curated Themes · LUMINA",
   description:
     "Explore 4,800+ 4K wallpapers curated across 10 signature thematic collections, 40+ specific subgenres, and 3 device form factors.",
 };
