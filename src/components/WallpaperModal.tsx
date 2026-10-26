@@ -11,7 +11,6 @@ import {
   Check, 
   Monitor, 
   Smartphone, 
-  Sparkles, 
   ChevronLeft, 
   ChevronRight,
   Maximize2,
@@ -457,7 +456,6 @@ export default function WallpaperModal({
 
               {wallpaper.vibe && (
                 <p className="mt-1 text-xs text-[#7e7e7d] font-medium flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-[#ffbb26]" />
                   <span>Vibe: {wallpaper.vibe}</span>
                 </p>
               )}

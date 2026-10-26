@@ -1,5 +1,4 @@
-import React from "react";
-import { Smartphone, Sparkles, Moon } from "lucide-react";
+import { Smartphone, Moon } from "lucide-react";
 import { getAllWallpapers, getCategories } from "@/lib/wallpapers";
 import WallpaperGrid from "@/components/WallpaperGrid";
 

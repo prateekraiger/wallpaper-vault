@@ -4,15 +4,15 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
-  Sparkles, 
+  Layers, 
   Monitor, 
   Smartphone, 
   FolderTree, 
   Heart, 
   Github, 
   Menu, 
-  X,
-  Compass
+  X, 
+  Compass 
 } from "lucide-react";
 
 export default function Header() {
@@ -62,7 +62,7 @@ export default function Header() {
         <Link href="/" className="flex items-center gap-2.5 group">
           {/* Hand-drawn storybook character icon */}
           <div className="w-9 h-9 rounded-[10px] bg-[#121212] flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105">
-            <span className="text-base select-none">✨</span>
+            <Layers className="w-4 h-4 text-white" />
           </div>
           <div>
             <div className="flex items-center gap-1.5 leading-none">

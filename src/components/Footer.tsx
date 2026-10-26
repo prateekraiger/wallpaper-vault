@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Monitor, Smartphone, Heart, Sparkles, Folder, ArrowUpRight } from "lucide-react";
+import { Monitor, Smartphone, Heart, Layers, Folder, ArrowUpRight } from "lucide-react";
 
 export default function Footer() {
   const categories = [
@@ -24,7 +24,7 @@ export default function Footer() {
           <div className="space-y-4 md:col-span-1">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-[10px] bg-[#121212] flex items-center justify-center text-white shadow-xs">
-                <span className="text-sm">✨</span>
+                <Layers className="w-4 h-4 text-white" />
               </div>
               <span className="font-bold text-[#121212] text-base tracking-tight">Family Vault</span>
             </div>
@@ -39,7 +39,7 @@ export default function Footer() {
                 <Smartphone className="w-3 h-3 text-[#ff58ae]" /> Mobile
               </span>
               <span className="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full bg-[#ffbb26] text-[#121212] font-semibold">
-                <Sparkles className="w-3 h-3" /> 4K UHD
+                4K UHD
               </span>
             </div>
           </div>

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Download, Heart, Maximize2, Monitor, Smartphone, Sparkles, Moon, Check, Loader2 } from "lucide-react";
+import { Download, Heart, Maximize2, Monitor, Smartphone, Moon, Check, Loader2 } from "lucide-react";
 import { Wallpaper } from "@/types/wallpaper";
 import { showToast } from "@/components/Toast";
 
@@ -123,7 +123,7 @@ export default function WallpaperCard({ wallpaper, onPreview }: WallpaperCardPro
   return (
     <div
       onClick={() => onPreview(wallpaper)}
-      className="group relative rounded-[10px] overflow-hidden bg-white cursor-pointer flex flex-col justify-between transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]"
+      className="group relative rounded-[10px] overflow-hidden bg-white cursor-pointer flex flex-col self-start w-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]"
       style={{
         boxShadow: "inset 0 0 0 1px #f2f0ed",
       }}
@@ -196,8 +196,8 @@ export default function WallpaperCard({ wallpaper, onPreview }: WallpaperCardPro
 
             {/* 4K Honey Tag */}
             {wallpaper.is4K && (
-              <span className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#ffbb26] text-[#121212] shadow-sm">
-                <Sparkles className="w-2.5 h-2.5" /> 4K
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#ffbb26] text-[#121212] shadow-sm">
+                4K
               </span>
             )}
 

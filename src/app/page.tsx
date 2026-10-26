@@ -1,16 +1,11 @@
 import React from "react";
 import Link from "next/link";
 import { 
-  Sparkles, 
   Monitor, 
   Smartphone, 
   Layers, 
   FolderTree, 
-  ArrowRight,
-  Download,
-  CheckCircle2,
-  Sliders,
-  FolderOpen
+  ArrowRight
 } from "lucide-react";
 import { getAllWallpapers, getCategories, getDeviceCounts } from "@/lib/wallpapers";
 import WallpaperGrid from "@/components/WallpaperGrid";
@@ -21,19 +16,13 @@ export default function HomePage() {
   const deviceCounts = getDeviceCounts();
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-12">
       {/* Storybook Hero Section with Flanking Mascot Clusters */}
       <section className="relative pt-6 pb-4 sm:pt-10 sm:pb-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
           {/* Left Storybook Mascot Cluster (Desktop) */}
           <div className="hidden lg:flex lg:col-span-3 flex-col items-center justify-center relative select-none">
-            {/* Confetti: Sky Blue Star */}
-            <div className="absolute -top-4 left-4 animate-story-float">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="#64c6ff" stroke="#343433" strokeWidth="1.5">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-              </svg>
-            </div>
 
             {/* Mascot 1: Orange Smiling Cloud */}
             <div className="w-40 h-28 rounded-[48px] bg-[#ff3e00] border-2 border-[#343433] relative flex items-center justify-center shadow-xs -rotate-3 transition-transform hover:rotate-0">
@@ -207,118 +196,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Signature Family Feature Row: Dark Anchor Card + 2 White Feature Cards */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Dark Feature Card (The only dark surface on the page) */}
-        <div className="rounded-[10px] bg-[#121212] text-white p-6 shadow-[0_4px_24px_rgba(0,0,0,0.12)] flex flex-col justify-between">
-          <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-[#ffbb26] block mb-1">
-              File Architecture
-            </span>
-            <h3 className="text-lg font-bold text-white mb-4">
-              Direct File Access
-            </h3>
-            
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#0086fc] flex items-center justify-center text-white shrink-0">
-                  <Monitor className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-white">Desktop 16:9 & Ultrawide</p>
-                  <p className="text-[10px] text-white/60">Categorized on disk</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#ff58ae] flex items-center justify-center text-white shrink-0">
-                  <Smartphone className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-white">Mobile 9:16 Vertical</p>
-                  <p className="text-[10px] text-white/60">Optimized for iOS & Android</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#00ca48] flex items-center justify-center text-white shrink-0">
-                  <CheckCircle2 className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-white">Pure AMOLED Blacks</p>
-                  <p className="text-[10px] text-white/60">Battery-friendly true black</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-4 mt-4 border-t border-white/10">
-            <Link href="/folders" className="family-demo-link text-xs flex items-center gap-1">
-              <span>Explore physical directory tree</span>
-              <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
-        </div>
-
-        {/* Feature Card 2: Hairline Inset White Card */}
-        <div className="rounded-[10px] bg-white p-6 border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] flex flex-col justify-between">
-          <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-[#0086fc] block mb-1">
-              Taxonomy
-            </span>
-            <h3 className="text-lg font-bold text-[#121212] mb-2">
-              Human-Curated Subcategories
-            </h3>
-            <p className="text-xs text-[#474645] leading-relaxed mb-4">
-              Every folder contains rich subgenres: from JDM legends and Cyberpunk neo-Tokyo to Lo-Fi balconies and Alpine lakes.
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {["Supercars", "Neo-Tokyo", "Alpine Lakes", "Samurai", "Lo-Fi Rooms"].map((t) => (
-                <span key={t} className="text-[11px] px-2 py-0.5 rounded-[4px] bg-[#f6f4ef] text-[#474645] border border-[#e5d5c3]">
-                  {t}
-                </span>
-              ))}
-            </div>
-          </div>
-          <div className="pt-4 mt-4 border-t border-[#f2f0ed]">
-            <Link href="/category/anime-manga" className="family-demo-link text-xs flex items-center gap-1">
-              <span>View theme breakdown</span>
-              <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
-        </div>
-
-        {/* Feature Card 3: Hairline Inset White Card */}
-        <div className="rounded-[10px] bg-white p-6 border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] flex flex-col justify-between">
-          <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-[#00c978] block mb-1">
-              Resolution
-            </span>
-            <h3 className="text-lg font-bold text-[#121212] mb-2">
-              Original Master Files
-            </h3>
-            <p className="text-xs text-[#474645] leading-relaxed mb-4">
-              Download clean, uncompressed master wallpaper files straight from disk without quality loss, watermarks, or sign-ups.
-            </p>
-            <div className="p-3 rounded-[6px] bg-[#f2f0ed] text-[11px] text-[#474645] space-y-1 font-mono">
-              <div>✓ 7680×4320 (8K)</div>
-              <div>✓ 3840×2160 (4K UHD)</div>
-              <div>✓ Direct instantaneous download</div>
-            </div>
-          </div>
-          <div className="pt-4 mt-4 border-t border-[#f2f0ed]">
-            <a href="#explorer" className="family-demo-link text-xs flex items-center gap-1">
-              <span>Jump to wallpapers</span>
-              <ArrowRight className="w-3 h-3" />
-            </a>
-          </div>
-        </div>
-      </section>
-
       {/* Main Wallpaper Explorer Grid */}
-      <section id="explorer" className="pt-4">
+      <section id="explorer" className="pt-2">
         <div className="flex items-center gap-2 mb-6">
-          <div className="w-3 h-3 rounded-full bg-[#121212]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#121212]" />
           <h2 className="text-xl font-bold text-[#121212] tracking-tight">
             Explore All Wallpapers
           </h2>
@@ -329,6 +210,7 @@ export default function HomePage() {
           categories={categories}
           defaultDevice="all"
           defaultCategory="all"
+          isHomePage={true}
         />
       </section>
     </div>

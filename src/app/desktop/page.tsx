@@ -1,5 +1,4 @@
-import React from "react";
-import { Monitor, Sparkles } from "lucide-react";
+import { Monitor } from "lucide-react";
 import { getAllWallpapers, getCategories } from "@/lib/wallpapers";
 import WallpaperGrid from "@/components/WallpaperGrid";
 

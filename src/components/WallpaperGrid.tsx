@@ -6,7 +6,6 @@ import {
   Monitor, 
   Smartphone, 
   Layers, 
-  Sparkles, 
   Moon, 
   X,
   FolderTree as FolderTreeIcon,
@@ -29,6 +28,7 @@ interface WallpaperGridProps {
   defaultSubcategory?: string;
   title?: string;
   subtitle?: string;
+  isHomePage?: boolean;
 }
 
 export default function WallpaperGrid({
@@ -39,6 +39,7 @@ export default function WallpaperGrid({
   defaultSubcategory = "all",
   title,
   subtitle,
+  isHomePage = false,
 }: WallpaperGridProps) {
   // Filter States
   const [selectedDevice, setSelectedDevice] = useState<string>(defaultDevice);
@@ -71,7 +72,7 @@ export default function WallpaperGrid({
 
   // Human Emotional Vibes from Family Tone
   const humanVibes = [
-    { name: "All Vibes", id: "all", icon: "✨" },
+    { name: "All Vibes", id: "all", icon: "•" },
     { name: "Late Night Focus", id: "Late Night Focus", icon: "🌙" },
     { name: "High Energy & Adrenaline", id: "High Energy & Adrenaline", icon: "⚡" },
     { name: "Zen & Serenity", id: "Zen & Serenity", icon: "🌿" },
@@ -347,17 +348,19 @@ export default function WallpaperGrid({
             </button>
 
             {/* Folder directory toggle */}
-            <button
-              onClick={() => setShowFolderSidebar(!showFolderSidebar)}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-[32px] text-xs font-medium border transition-colors shadow-xs ${
-                showFolderSidebar
-                  ? "bg-[#121212] text-white border-[#121212]"
-                  : "bg-white text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef] border-[#f2f0ed]"
-              }`}
-            >
-              <FolderTreeIcon className="w-3.5 h-3.5 text-[#0086fc]" />
-              <span>{showFolderSidebar ? "Hide Folders" : "Folders"}</span>
-            </button>
+            {!isHomePage && (
+              <button
+                onClick={() => setShowFolderSidebar(!showFolderSidebar)}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-[32px] text-xs font-medium border transition-colors shadow-xs ${
+                  showFolderSidebar
+                    ? "bg-[#121212] text-white border-[#121212]"
+                    : "bg-white text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef] border-[#f2f0ed]"
+                }`}
+              >
+                <FolderTreeIcon className="w-3.5 h-3.5 text-[#0086fc]" />
+                <span>{showFolderSidebar ? "Hide Folders" : "Folders"}</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -383,23 +386,25 @@ export default function WallpaperGrid({
             )}
           </div>
 
-          {/* Category Dropdown */}
-          <select
-            value={selectedCategory}
-            onChange={(e) => {
-              setSelectedCategory(e.target.value);
-              setSelectedSubcategory("all");
-              setDisplayCount(36);
-            }}
-            className="px-3.5 py-2.5 rounded-[10px] bg-white border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] text-xs font-medium text-[#343433] focus:outline-none focus:border-[#e5d5c3] cursor-pointer"
-          >
-            <option value="all">All Categories</option>
-            {categories.map((c) => (
-              <option key={c.slug} value={c.slug}>
-                {c.name} ({c.count})
-              </option>
-            ))}
-          </select>
+          {/* Category Dropdown (for non-home pages) */}
+          {!isHomePage && (
+            <select
+              value={selectedCategory}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+                setSelectedSubcategory("all");
+                setDisplayCount(36);
+              }}
+              className="px-3.5 py-2.5 rounded-[10px] bg-white border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] text-xs font-medium text-[#343433] focus:outline-none focus:border-[#e5d5c3] cursor-pointer"
+            >
+              <option value="all">All Categories</option>
+              {categories.map((c) => (
+                <option key={c.slug} value={c.slug}>
+                  {c.name} ({c.count})
+                </option>
+              ))}
+            </select>
+          )}
 
           {/* Sort By Dropdown */}
           <select
@@ -417,19 +422,18 @@ export default function WallpaperGrid({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setOnly4K(!only4K)}
-              className={`flex items-center gap-1 px-3 py-2 rounded-[32px] text-xs font-semibold border transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-[32px] text-xs font-semibold border transition-all ${
                 only4K
                   ? "bg-[#ffbb26] text-[#121212] border-[#ffbb26] shadow-xs"
                   : "bg-white text-[#474645] hover:text-[#121212] border-[#f2f0ed]"
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5" />
               <span>4K UHD</span>
             </button>
 
             <button
               onClick={() => setOnlyAmoled(!onlyAmoled)}
-              className={`flex items-center gap-1 px-3 py-2 rounded-[32px] text-xs font-semibold border transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-[32px] text-xs font-semibold border transition-all ${
                 onlyAmoled
                   ? "bg-[#00ca48] text-white border-[#00ca48] shadow-xs"
                   : "bg-white text-[#474645] hover:text-[#121212] border-[#f2f0ed]"
@@ -441,101 +445,107 @@ export default function WallpaperGrid({
           </div>
         </div>
 
-        {/* Human Emotional Mood / Vibe Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          <span className="text-[11px] font-semibold text-[#474645] flex items-center gap-1 pr-1 shrink-0">
-            <Sparkles className="w-3 h-3 text-[#ffbb26]" /> Mood:
-          </span>
-          {humanVibes.map((vibe) => {
-            const isVibeActive = selectedVibe === vibe.id;
-            return (
-              <button
-                key={vibe.id}
-                onClick={() => {
-                  setSelectedVibe(vibe.id);
-                  setDisplayCount(36);
-                }}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-[32px] text-[11px] whitespace-nowrap border transition-all ${
-                  isVibeActive
-                    ? "bg-[#121212] text-white border-[#121212] font-semibold"
-                    : "bg-white border-[#f2f0ed] text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef]"
-                }`}
-              >
-                <span>{vibe.icon}</span>
-                <span>{vibe.name}</span>
-              </button>
-            );
-          })}
-        </div>
+        {/* Human Emotional Mood / Vibe Filter Pills (hidden on clean home page) */}
+        {!isHomePage && (
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+            <span className="text-[11px] font-semibold text-[#474645] flex items-center gap-1 pr-1 shrink-0">
+              Mood:
+            </span>
+            {humanVibes.map((vibe) => {
+              const isVibeActive = selectedVibe === vibe.id;
+              return (
+                <button
+                  key={vibe.id}
+                  onClick={() => {
+                    setSelectedVibe(vibe.id);
+                    setDisplayCount(36);
+                  }}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-[32px] text-[11px] whitespace-nowrap border transition-all ${
+                    isVibeActive
+                      ? "bg-[#121212] text-white border-[#121212] font-semibold"
+                      : "bg-white border-[#f2f0ed] text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef]"
+                  }`}
+                >
+                  <span>{vibe.icon}</span>
+                  <span>{vibe.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
-        {/* Color Tones Quick Bar */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          <span className="text-[11px] font-semibold text-[#474645] flex items-center gap-1 pr-1 shrink-0">
-            <Palette className="w-3 h-3 text-[#0086fc]" /> Palette:
-          </span>
-          {colorTones.map((tone) => {
-            const isToneActive = selectedColor === tone.id;
-            return (
-              <button
-                key={tone.id}
-                onClick={() => {
-                  setSelectedColor(tone.id);
-                  setDisplayCount(36);
-                }}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-[32px] text-[11px] whitespace-nowrap border transition-all ${
-                  isToneActive
-                    ? "bg-[#f2f0ed] border-[#e5d5c3] text-[#121212] font-semibold"
-                    : "bg-white border-[#f2f0ed] text-[#7e7e7d] hover:text-[#121212]"
-                }`}
-              >
-                <span className={`w-2.5 h-2.5 rounded-full ${tone.bg}`} />
-                <span>{tone.name}</span>
-              </button>
-            );
-          })}
-        </div>
+        {/* Color Tones Quick Bar (hidden on clean home page) */}
+        {!isHomePage && (
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+            <span className="text-[11px] font-semibold text-[#474645] flex items-center gap-1 pr-1 shrink-0">
+              <Palette className="w-3 h-3 text-[#0086fc]" /> Palette:
+            </span>
+            {colorTones.map((tone) => {
+              const isToneActive = selectedColor === tone.id;
+              return (
+                <button
+                  key={tone.id}
+                  onClick={() => {
+                    setSelectedColor(tone.id);
+                    setDisplayCount(36);
+                  }}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-[32px] text-[11px] whitespace-nowrap border transition-all ${
+                    isToneActive
+                      ? "bg-[#f2f0ed] border-[#e5d5c3] text-[#121212] font-semibold"
+                      : "bg-white border-[#f2f0ed] text-[#7e7e7d] hover:text-[#121212]"
+                  }`}
+                >
+                  <span className={`w-2.5 h-2.5 rounded-full ${tone.bg}`} />
+                  <span>{tone.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
-        {/* Top-Level Category Horizon Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          <button
-            onClick={() => {
-              setSelectedCategory("all");
-              setSelectedSubcategory("all");
-              setDisplayCount(36);
-            }}
-            className={`px-3 py-1 rounded-[32px] text-xs font-semibold whitespace-nowrap transition-all ${
-              selectedCategory === "all"
-                ? "bg-[#121212] text-white font-medium"
-                : "bg-white text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef] border border-[#f2f0ed]"
-            }`}
-          >
-            All Themes
-          </button>
-          {categories.map((cat) => {
-            const isActive = selectedCategory === cat.slug || selectedCategory === cat.name;
-            return (
-              <button
-                key={cat.slug}
-                onClick={() => {
-                  setSelectedCategory(cat.slug);
-                  setSelectedSubcategory("all");
-                  setDisplayCount(36);
-                }}
-                className={`px-3 py-1 rounded-[32px] text-xs whitespace-nowrap transition-all flex items-center gap-1.5 ${
-                  isActive
-                    ? "bg-[#121212] text-white font-semibold"
-                    : "bg-white text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef] border border-[#f2f0ed]"
-                }`}
-              >
-                <span>{cat.name}</span>
-                <span className="text-[10px] opacity-70">({cat.count})</span>
-              </button>
-            );
-          })}
-        </div>
+        {/* Top-Level Category Horizon Tabs (hidden on clean home page) */}
+        {!isHomePage && (
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+            <button
+              onClick={() => {
+                setSelectedCategory("all");
+                setSelectedSubcategory("all");
+                setDisplayCount(36);
+              }}
+              className={`px-3 py-1 rounded-[32px] text-xs font-semibold whitespace-nowrap transition-all ${
+                selectedCategory === "all"
+                  ? "bg-[#121212] text-white font-medium"
+                  : "bg-white text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef] border border-[#f2f0ed]"
+              }`}
+            >
+              All Themes
+            </button>
+            {categories.map((cat) => {
+              const isActive = selectedCategory === cat.slug || selectedCategory === cat.name;
+              return (
+                <button
+                  key={cat.slug}
+                  onClick={() => {
+                    setSelectedCategory(cat.slug);
+                    setSelectedSubcategory("all");
+                    setDisplayCount(36);
+                  }}
+                  className={`px-3 py-1 rounded-[32px] text-xs whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                    isActive
+                      ? "bg-[#121212] text-white font-semibold"
+                      : "bg-white text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef] border border-[#f2f0ed]"
+                  }`}
+                >
+                  <span>{cat.name}</span>
+                  <span className="text-[10px] opacity-70">({cat.count})</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
-        {/* Subcategory Pills Row (When a category is active) */}
-        {activeCategoryObj && activeCategoryObj.subcategories && activeCategoryObj.subcategories.length > 0 && (
+        {/* Subcategory Pills Row (When a category is active, hidden on home page) */}
+        {!isHomePage && activeCategoryObj && activeCategoryObj.subcategories && activeCategoryObj.subcategories.length > 0 && (
           <div className="p-3 rounded-[10px] bg-[#f2f0ed] border border-[#e5d5c3] flex items-center gap-1.5 overflow-x-auto scrollbar-none animate-in fade-in duration-150">
             <span className="text-[11px] font-bold text-[#121212] shrink-0 uppercase tracking-wider pr-1">
               Subcategories:
@@ -662,7 +672,7 @@ export default function WallpaperGrid({
           ) : (
             <>
               <div
-                className={`grid gap-4 ${
+                className={`grid gap-4 items-start ${
                   gridDensity === "compact"
                     ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
                     : "grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4"
