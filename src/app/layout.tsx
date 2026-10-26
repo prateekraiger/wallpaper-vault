@@ -32,10 +32,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark scroll-smooth">
-      <body className={`${inter.variable} min-h-screen flex flex-col bg-[#070a10] text-gray-100 antialiased selection:bg-indigo-500 selection:text-white`}>
+    <html lang="en" className="scroll-smooth">
+      <body className={`${inter.variable} min-h-screen flex flex-col bg-[#fbfaf9] text-[#343433] antialiased selection:bg-[#ff3e00] selection:text-white`}>
         <Header />
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <main className="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
           {children}
         </main>
         <Footer />

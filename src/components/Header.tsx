@@ -9,11 +9,10 @@ import {
   Smartphone, 
   FolderTree, 
   Heart, 
-  Layers, 
   Github, 
   Menu, 
   X,
-  Search
+  Compass
 } from "lucide-react";
 
 export default function Header() {
@@ -44,7 +43,7 @@ export default function Header() {
   }, []);
 
   const navLinks = [
-    { name: "Explore", href: "/", icon: Sparkles },
+    { name: "Explore", href: "/", icon: Compass },
     { name: "Desktop", href: "/desktop", icon: Monitor, badge: "PC" },
     { name: "Mobile", href: "/mobile", icon: Smartphone, badge: "Phone" },
     { name: "Folders", href: "/folders", icon: FolderTree },
@@ -57,30 +56,31 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full glass-panel border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform">
-            <Layers className="w-5 h-5 text-white" />
+    <header className="sticky top-0 z-40 w-full bg-[#fbfaf9]/95 backdrop-blur-md border-b border-[#f2f0ed]">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        {/* Storybook Logo */}
+        <Link href="/" className="flex items-center gap-2.5 group">
+          {/* Hand-drawn storybook character icon */}
+          <div className="w-9 h-9 rounded-[10px] bg-[#121212] flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105">
+            <span className="text-base select-none">✨</span>
           </div>
           <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-gray-100 to-gray-400 bg-clip-text text-transparent">
-                WALLPAPER
+            <div className="flex items-center gap-1.5 leading-none">
+              <span className="font-bold text-base tracking-tight text-[#121212]">
+                Family
               </span>
-              <span className="font-extrabold text-lg text-indigo-400">
-                VAULT
+              <span className="text-[11px] font-semibold tracking-wider uppercase px-1.5 py-0.5 rounded-[4px] bg-[#f2f0ed] text-[#474645] border border-[#e5d5c3]">
+                Vault
               </span>
             </div>
-            <p className="text-[10px] text-gray-400 -mt-1 font-medium tracking-wider uppercase">
-              4,800+ 4K Collection
+            <p className="text-[11px] text-[#7e7e7d] mt-0.5 font-normal">
+              4,891 Curated Wallpapers
             </p>
           </div>
         </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-1.5">
+        {/* Center Desktop Navigation - Ghost Buttons */}
+        <nav className="hidden md:flex items-center gap-1">
           {navLinks.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -88,21 +88,21 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-[32px] text-[14px] transition-all ${
                   isActive
-                    ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/30"
-                    : "text-gray-300 hover:text-white hover:bg-white/5"
+                    ? "bg-[#f2f0ed] text-[#121212] font-semibold shadow-[inset_0_0_0_1px_#e5d5c3]"
+                    : "text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef]"
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? "text-indigo-400" : "text-gray-400"}`} />
+                <Icon className={`w-3.5 h-3.5 ${isActive ? "text-[#ff3e00]" : "text-[#7e7e7d]"}`} />
                 <span>{item.name}</span>
                 {item.badge && (
-                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-white/10 text-gray-300">
+                  <span className="text-[10px] font-medium px-1.5 py-0.2 rounded-full bg-[#e5d5c3]/50 text-[#474645]">
                     {item.badge}
                   </span>
                 )}
                 {item.count !== undefined && item.count > 0 && (
-                  <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
+                  <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-[#ff58ae] text-white">
                     {item.count}
                   </span>
                 )}
@@ -111,22 +111,30 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Actions */}
-        <div className="flex items-center gap-3">
+        {/* Right CTA Actions - Sand Pill + Dark Pill */}
+        <div className="flex items-center gap-2.5">
+          <Link
+            href="/folders"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-[32px] text-[13px] font-medium text-[#343433] bg-[#f6f4ef] hover:bg-[#edeae2] border border-[#e5d5c3] transition-all"
+          >
+            <FolderTree className="w-3.5 h-3.5 text-[#0086fc]" />
+            <span>Directories</span>
+          </Link>
+
           <a
             href="https://github.com/prateekraiger/wallpaper-vault"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-[32px] text-[13px] font-medium bg-[#121212] hover:bg-[#2c2c2c] text-[#fbfaf9] shadow-sm transition-all"
           >
-            <Github className="w-4 h-4" />
-            <span className="hidden sm:inline">GitHub</span>
+            <Github className="w-3.5 h-3.5" />
+            <span>GitHub</span>
           </a>
 
           {/* Mobile menu trigger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5"
+            className="md:hidden p-2 rounded-[10px] text-[#343433] hover:bg-[#f2f0ed] transition-colors"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -135,7 +143,7 @@ export default function Header() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-white/10 bg-[#0d121f] px-4 pt-2 pb-4 space-y-1">
+        <div className="md:hidden border-t border-[#f2f0ed] bg-[#fbfaf9] px-4 pt-2 pb-4 space-y-1 shadow-sm">
           {navLinks.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -144,18 +152,18 @@ export default function Header() {
                 key={item.name}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium ${
+                className={`flex items-center justify-between px-3 py-2.5 rounded-[10px] text-sm font-medium ${
                   isActive
-                    ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/30"
-                    : "text-gray-300 hover:text-white hover:bg-white/5"
+                    ? "bg-[#f2f0ed] text-[#121212] font-semibold"
+                    : "text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef]"
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Icon className="w-4 h-4 text-gray-400" />
+                <div className="flex items-center gap-2.5">
+                  <Icon className="w-4 h-4 text-[#7e7e7d]" />
                   <span>{item.name}</span>
                 </div>
                 {item.count !== undefined && item.count > 0 && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#ff58ae] text-white">
                     {item.count}
                   </span>
                 )}

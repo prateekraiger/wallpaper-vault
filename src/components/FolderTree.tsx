@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { 
   Folder, 
   FolderOpen, 
@@ -38,7 +37,6 @@ export default function FolderTree({
   selectedDevice = "all",
   selectedCategory = "all",
 }: FolderTreeProps) {
-  // Pre-configured category counts per device
   const deviceFolders: DeviceFolder[] = [
     {
       name: "Desktop Wallpapers",
@@ -109,15 +107,15 @@ export default function FolderTree({
   };
 
   return (
-    <div className="w-full glass-card rounded-2xl p-4 sm:p-5 border border-white/10 select-none">
-      <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+    <div className="w-full bg-white rounded-[10px] p-4 sm:p-5 border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] select-none">
+      <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#f2f0ed]">
         <div className="flex items-center gap-2">
-          <HardDrive className="w-4 h-4 text-indigo-400" />
-          <span className="text-xs font-bold text-gray-200 uppercase tracking-wider">
-            Directory Explorer
+          <HardDrive className="w-4 h-4 text-[#0086fc]" />
+          <span className="text-xs font-bold text-[#121212] uppercase tracking-wider">
+            Directory Tree
           </span>
         </div>
-        <span className="text-[11px] font-mono text-gray-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
+        <span className="text-[11px] font-mono text-[#7e7e7d] bg-[#f6f4ef] px-2 py-0.5 rounded-full border border-[#e5d5c3]">
           /categorized
         </span>
       </div>
@@ -129,26 +127,26 @@ export default function FolderTree({
           const isDeviceActive = selectedDevice === dev.deviceType;
 
           return (
-            <div key={dev.name} className="rounded-xl overflow-hidden bg-white/[0.02] border border-white/5">
+            <div key={dev.name} className="rounded-[8px] overflow-hidden bg-[#fbfaf9] border border-[#f2f0ed]">
               {/* Device Folder Header */}
               <div
                 onClick={() => {
                   toggleDevice(dev.deviceType);
                   if (onSelectFolder) onSelectFolder(dev.deviceType, "all");
                 }}
-                className={`flex items-center justify-between px-3.5 py-2.5 cursor-pointer hover:bg-white/5 transition-colors ${
+                className={`flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-[#f2f0ed] transition-colors ${
                   isDeviceActive && selectedCategory === "all"
-                    ? "bg-indigo-600/15 border-l-2 border-indigo-500 text-indigo-200"
-                    : "text-gray-300"
+                    ? "bg-[#f2f0ed] font-semibold text-[#121212] border-l-2 border-[#121212]"
+                    : "text-[#343433]"
                 }`}
               >
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleDevice(dev.deviceType);
                     }}
-                    className="text-gray-400 hover:text-white"
+                    className="text-[#7e7e7d] hover:text-[#121212]"
                   >
                     {isExpanded ? (
                       <ChevronDown className="w-3.5 h-3.5" />
@@ -156,17 +154,17 @@ export default function FolderTree({
                       <ChevronRight className="w-3.5 h-3.5" />
                     )}
                   </button>
-                  <Icon className="w-4 h-4 text-indigo-400" />
-                  <span className="text-xs font-semibold">{dev.name}</span>
+                  <Icon className="w-4 h-4 text-[#0086fc]" />
+                  <span className="text-xs font-medium">{dev.name}</span>
                 </div>
-                <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-white/5 text-gray-400">
-                  {dev.totalCount.toLocaleString()} files
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-white text-[#7e7e7d] border border-[#e5d5c3]">
+                  {dev.totalCount.toLocaleString()}
                 </span>
               </div>
 
               {/* Category Subfolders */}
               {isExpanded && (
-                <div className="pl-8 pr-3 pb-2 pt-1 space-y-1 border-t border-white/[0.03]">
+                <div className="pl-7 pr-3 pb-2 pt-1 space-y-0.5 border-t border-[#f2f0ed]">
                   {dev.categories.map((cat) => {
                     const isCatActive =
                       selectedDevice === dev.deviceType &&
@@ -180,21 +178,21 @@ export default function FolderTree({
                             onSelectFolder(dev.deviceType, cat.slug);
                           }
                         }}
-                        className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition-all ${
+                        className={`flex items-center justify-between px-2.5 py-1.5 rounded-[6px] text-xs cursor-pointer transition-all ${
                           isCatActive
-                            ? "bg-indigo-600/25 text-indigo-200 font-semibold"
-                            : "text-gray-400 hover:text-gray-200 hover:bg-white/5"
+                            ? "bg-[#121212] text-white font-medium"
+                            : "text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef]"
                         }`}
                       >
                         <div className="flex items-center gap-2 truncate">
                           {isCatActive ? (
-                            <FolderOpen className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                            <FolderOpen className="w-3.5 h-3.5 text-[#ffcd6c] shrink-0" />
                           ) : (
-                            <Folder className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                            <Folder className="w-3.5 h-3.5 text-[#7e7e7d] shrink-0" />
                           )}
                           <span className="truncate">{cat.name}</span>
                         </div>
-                        <span className="text-[10px] font-mono text-gray-500 ml-2 shrink-0">
+                        <span className={`text-[10px] font-mono ml-2 shrink-0 ${isCatActive ? "text-white/80" : "text-[#7e7e7d]"}`}>
                           {cat.count}
                         </span>
                       </div>

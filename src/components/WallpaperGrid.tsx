@@ -3,24 +3,18 @@
 import React, { useState, useMemo, useTransition } from "react";
 import { 
   Search, 
-  Filter, 
   Monitor, 
   Smartphone, 
   Layers, 
   Sparkles, 
   Moon, 
-  ArrowUpDown, 
   X,
   FolderTree as FolderTreeIcon,
   Grid,
-  Check,
   Palette,
-  SlidersHorizontal,
   LayoutGrid,
   Dices,
-  Flame,
-  Heart,
-  Smile
+  RotateCcw
 } from "lucide-react";
 import { Wallpaper, CategoryInfo } from "@/types/wallpaper";
 import WallpaperCard from "@/components/WallpaperCard";
@@ -66,16 +60,16 @@ export default function WallpaperGrid({
 
   // Available Color Palette Tones
   const colorTones = [
-    { name: "All Colors", id: "all", bg: "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" },
-    { name: "OLED Pitch Black", id: "dark", bg: "bg-black border border-white/20" },
-    { name: "Deep Blue", id: "blue", bg: "bg-blue-600" },
-    { name: "Cosmic Purple", id: "purple", bg: "bg-purple-600" },
-    { name: "Crimson Red", id: "red", bg: "bg-rose-600" },
-    { name: "Emerald Green", id: "green", bg: "bg-emerald-600" },
-    { name: "Solar Amber", id: "amber", bg: "bg-amber-500" },
+    { name: "All Colors", id: "all", bg: "bg-[#121212]" },
+    { name: "OLED Pitch Black", id: "dark", bg: "bg-[#000000] border border-[#e5d5c3]" },
+    { name: "Sky Blue", id: "blue", bg: "bg-[#0086fc]" },
+    { name: "Plum Violet", id: "purple", bg: "bg-[#9f4fff]" },
+    { name: "Ember Red", id: "red", bg: "bg-[#ff3e00]" },
+    { name: "Grass Green", id: "green", bg: "bg-[#00c978]" },
+    { name: "Sun Yellow", id: "amber", bg: "bg-[#ffbb26]" },
   ];
 
-  // Human Emotional Vibes
+  // Human Emotional Vibes from Family Tone
   const humanVibes = [
     { name: "All Vibes", id: "all", icon: "✨" },
     { name: "Late Night Focus", id: "Late Night Focus", icon: "🌙" },
@@ -221,19 +215,23 @@ export default function WallpaperGrid({
   const handlePrev = () => {
     if (currentIndex > 0) {
       setActiveWallpaper(filteredWallpapers[currentIndex - 1]);
+    } else if (filteredWallpapers.length > 0) {
+      setActiveWallpaper(filteredWallpapers[filteredWallpapers.length - 1]);
     }
   };
 
   const handleNext = () => {
     if (currentIndex < filteredWallpapers.length - 1) {
       setActiveWallpaper(filteredWallpapers[currentIndex + 1]);
+    } else if (filteredWallpapers.length > 0) {
+      setActiveWallpaper(filteredWallpapers[0]);
     }
   };
 
   const resetFilters = () => {
-    setSelectedDevice("all");
-    setSelectedCategory("all");
-    setSelectedSubcategory("all");
+    setSelectedDevice(defaultDevice);
+    setSelectedCategory(defaultCategory);
+    setSelectedSubcategory(defaultSubcategory);
     setSelectedVibe("all");
     setSelectedColor("all");
     setSearchQuery("");
@@ -244,36 +242,37 @@ export default function WallpaperGrid({
 
   return (
     <div className="w-full">
-      {/* Title Section */}
+      {/* Title Section (Optional) */}
       {(title || subtitle) && (
         <div className="mb-8">
           {title && (
-            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-3">
-              <span>{title}</span>
+            <h1 className="text-3xl sm:text-4xl font-semibold text-[#121212] tracking-tight">
+              {title}
             </h1>
           )}
           {subtitle && (
-            <p className="text-sm text-gray-300 mt-2 max-w-2xl leading-relaxed">
+            <p className="text-[15px] text-[#474645] mt-1.5 max-w-2xl leading-relaxed">
               {subtitle}
             </p>
           )}
         </div>
       )}
 
-      {/* Control Bar */}
+      {/* Control Area */}
       <div className="space-y-4 mb-8">
-        {/* Device Switcher & Quick Action Row */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl glass-panel border border-white/10 overflow-x-auto shadow-sm">
+        {/* Device Switcher & Top Action Buttons */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          {/* Device Tabs Bar */}
+          <div className="flex items-center gap-1.5 p-1 rounded-[10px] bg-white border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] overflow-x-auto">
             <button
               onClick={() => {
                 setSelectedDevice("all");
                 setDisplayCount(36);
               }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-[32px] text-xs whitespace-nowrap transition-all ${
                 selectedDevice === "all"
-                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
-                  : "text-gray-400 hover:text-white"
+                  ? "bg-[#121212] text-white font-medium"
+                  : "text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef]"
               }`}
             >
               <Grid className="w-3.5 h-3.5" />
@@ -285,10 +284,10 @@ export default function WallpaperGrid({
                 setSelectedDevice("Desktop");
                 setDisplayCount(36);
               }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-[32px] text-xs whitespace-nowrap transition-all ${
                 selectedDevice === "Desktop"
-                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
-                  : "text-gray-400 hover:text-white"
+                  ? "bg-[#121212] text-white font-medium"
+                  : "text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef]"
               }`}
             >
               <Monitor className="w-3.5 h-3.5" />
@@ -300,10 +299,10 @@ export default function WallpaperGrid({
                 setSelectedDevice("Mobile");
                 setDisplayCount(36);
               }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-[32px] text-xs whitespace-nowrap transition-all ${
                 selectedDevice === "Mobile"
-                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
-                  : "text-gray-400 hover:text-white"
+                  ? "bg-[#121212] text-white font-medium"
+                  : "text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef]"
               }`}
             >
               <Smartphone className="w-3.5 h-3.5" />
@@ -315,10 +314,10 @@ export default function WallpaperGrid({
                 setSelectedDevice("Square & Avatars");
                 setDisplayCount(36);
               }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-[32px] text-xs whitespace-nowrap transition-all ${
                 selectedDevice === "Square & Avatars"
-                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
-                  : "text-gray-400 hover:text-white"
+                  ? "bg-[#121212] text-white font-medium"
+                  : "text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef]"
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
@@ -326,23 +325,23 @@ export default function WallpaperGrid({
             </button>
           </div>
 
-          {/* Action buttons (Surprise Me, Folder toggle & Density) */}
+          {/* Action buttons (Surprise Me, Density & Folders) */}
           <div className="flex items-center gap-2 shrink-0">
-            {/* Surprise Me Button */}
+            {/* Surprise Me - Sand Pill with Honey/Yellow Accent */}
             <button
               onClick={handleSurpriseMe}
-              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold bg-gradient-to-r from-amber-500/20 to-purple-500/20 hover:from-amber-500/30 hover:to-purple-500/30 text-amber-300 border border-amber-500/30 shadow-md shadow-amber-500/10 transition-all transform active:scale-95"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-[32px] text-xs font-semibold bg-[#f6f4ef] hover:bg-[#edeae2] text-[#121212] border border-[#e5d5c3] shadow-xs transition-all active:scale-95"
               title="Pick a random wallpaper for me!"
             >
-              <Dices className="w-4 h-4 text-amber-400 animate-bounce" />
+              <Dices className="w-3.5 h-3.5 text-[#ffbb26]" />
               <span>Surprise Me</span>
             </button>
 
             {/* Density toggle */}
             <button
               onClick={() => setGridDensity(gridDensity === "standard" ? "compact" : "standard")}
-              className="p-2.5 rounded-xl glass-panel text-gray-300 hover:text-white border border-white/10 hidden md:flex items-center justify-center transition-colors"
-              title={gridDensity === "standard" ? "Switch to Compact 5-col Grid" : "Switch to Standard Grid"}
+              className="p-2 rounded-[10px] bg-white border border-[#f2f0ed] text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef] hidden md:flex items-center justify-center transition-colors shadow-xs"
+              title={gridDensity === "standard" ? "Switch to Compact Grid" : "Switch to Standard Grid"}
             >
               <LayoutGrid className="w-4 h-4" />
             </button>
@@ -350,36 +349,36 @@ export default function WallpaperGrid({
             {/* Folder directory toggle */}
             <button
               onClick={() => setShowFolderSidebar(!showFolderSidebar)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold border transition-colors ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-[32px] text-xs font-medium border transition-colors shadow-xs ${
                 showFolderSidebar
-                  ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
-                  : "glass-panel text-gray-300 hover:text-white border-white/10"
+                  ? "bg-[#121212] text-white border-[#121212]"
+                  : "bg-white text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef] border-[#f2f0ed]"
               }`}
             >
-              <FolderTreeIcon className="w-4 h-4 text-indigo-400" />
+              <FolderTreeIcon className="w-3.5 h-3.5 text-[#0086fc]" />
               <span>{showFolderSidebar ? "Hide Folders" : "Folders"}</span>
             </button>
           </div>
         </div>
 
         {/* Search & Filter Row */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
-          {/* Search Box */}
+        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2.5">
+          {/* Search Box - White with Hairline Inset Border */}
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7e7e7d]" />
             <input
               type="text"
-              placeholder="Search by keywords, subcategory, mood, car, anime, color (e.g. Porsche, Neon Tokyo, Alpine, Cyberpunk)..."
+              placeholder="Search by keywords, subcategory, mood, car, anime, color (e.g. Porsche, Neon Tokyo, Alpine)..."
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full pl-11 pr-10 py-3 rounded-2xl glass-panel border border-white/10 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-inner"
+              className="w-full pl-10 pr-9 py-2.5 rounded-[10px] bg-white border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] text-xs text-[#343433] placeholder-[#7e7e7d] focus:outline-none focus:border-[#e5d5c3] focus:shadow-[inset_0_0_0_1px_#e5d5c3] transition-all"
             />
             {searchQuery && (
               <button
                 onClick={() => handleSearchChange("")}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#7e7e7d] hover:text-[#121212] p-1"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
@@ -392,7 +391,7 @@ export default function WallpaperGrid({
               setSelectedSubcategory("all");
               setDisplayCount(36);
             }}
-            className="px-4 py-3 rounded-2xl glass-panel border border-white/10 text-xs font-medium text-gray-200 bg-[#0a0f1d] focus:outline-none focus:border-indigo-500 cursor-pointer"
+            className="px-3.5 py-2.5 rounded-[10px] bg-white border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] text-xs font-medium text-[#343433] focus:outline-none focus:border-[#e5d5c3] cursor-pointer"
           >
             <option value="all">All Categories</option>
             {categories.map((c) => (
@@ -406,7 +405,7 @@ export default function WallpaperGrid({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-3 rounded-2xl glass-panel border border-white/10 text-xs font-medium text-gray-200 bg-[#0a0f1d] focus:outline-none focus:border-indigo-500 cursor-pointer"
+            className="px-3.5 py-2.5 rounded-[10px] bg-white border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] text-xs font-medium text-[#343433] focus:outline-none focus:border-[#e5d5c3] cursor-pointer"
           >
             <option value="popular">Curated Popular & 4K</option>
             <option value="resolution">Highest Resolution</option>
@@ -418,10 +417,10 @@ export default function WallpaperGrid({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setOnly4K(!only4K)}
-              className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold border transition-all ${
+              className={`flex items-center gap-1 px-3 py-2 rounded-[32px] text-xs font-semibold border transition-all ${
                 only4K
-                  ? "bg-gradient-to-r from-amber-400 to-amber-500 text-black border-amber-300 shadow-lg shadow-amber-500/25"
-                  : "glass-panel text-gray-300 hover:text-white border-white/10"
+                  ? "bg-[#ffbb26] text-[#121212] border-[#ffbb26] shadow-xs"
+                  : "bg-white text-[#474645] hover:text-[#121212] border-[#f2f0ed]"
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
@@ -430,22 +429,22 @@ export default function WallpaperGrid({
 
             <button
               onClick={() => setOnlyAmoled(!onlyAmoled)}
-              className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold border transition-all ${
+              className={`flex items-center gap-1 px-3 py-2 rounded-[32px] text-xs font-semibold border transition-all ${
                 onlyAmoled
-                  ? "bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-600/30"
-                  : "glass-panel text-gray-300 hover:text-white border-white/10"
+                  ? "bg-[#00ca48] text-white border-[#00ca48] shadow-xs"
+                  : "bg-white text-[#474645] hover:text-[#121212] border-[#f2f0ed]"
               }`}
             >
-              <Moon className="w-3.5 h-3.5 text-indigo-400" />
+              <Moon className="w-3.5 h-3.5 text-[#00ca48]" />
               <span>AMOLED</span>
             </button>
           </div>
         </div>
 
         {/* Human Emotional Mood / Vibe Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <span className="text-[11px] font-bold text-indigo-300 flex items-center gap-1 pr-1 shrink-0">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Mood:
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          <span className="text-[11px] font-semibold text-[#474645] flex items-center gap-1 pr-1 shrink-0">
+            <Sparkles className="w-3 h-3 text-[#ffbb26]" /> Mood:
           </span>
           {humanVibes.map((vibe) => {
             const isVibeActive = selectedVibe === vibe.id;
@@ -456,10 +455,10 @@ export default function WallpaperGrid({
                   setSelectedVibe(vibe.id);
                   setDisplayCount(36);
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap border transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-[32px] text-[11px] whitespace-nowrap border transition-all ${
                   isVibeActive
-                    ? "bg-indigo-600 text-white border-indigo-400 shadow-md shadow-indigo-600/30 font-bold"
-                    : "bg-white/5 border-white/5 text-gray-300 hover:text-white hover:bg-white/10"
+                    ? "bg-[#121212] text-white border-[#121212] font-semibold"
+                    : "bg-white border-[#f2f0ed] text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef]"
                 }`}
               >
                 <span>{vibe.icon}</span>
@@ -470,9 +469,9 @@ export default function WallpaperGrid({
         </div>
 
         {/* Color Tones Quick Bar */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <span className="text-[11px] font-bold text-gray-400 flex items-center gap-1 pr-1 shrink-0">
-            <Palette className="w-3.5 h-3.5 text-indigo-400" /> Palette:
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          <span className="text-[11px] font-semibold text-[#474645] flex items-center gap-1 pr-1 shrink-0">
+            <Palette className="w-3 h-3 text-[#0086fc]" /> Palette:
           </span>
           {colorTones.map((tone) => {
             const isToneActive = selectedColor === tone.id;
@@ -483,10 +482,10 @@ export default function WallpaperGrid({
                   setSelectedColor(tone.id);
                   setDisplayCount(36);
                 }}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap border transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-[32px] text-[11px] whitespace-nowrap border transition-all ${
                   isToneActive
-                    ? "bg-white/15 border-white text-white font-bold"
-                    : "bg-white/5 border-white/5 text-gray-400 hover:text-white"
+                    ? "bg-[#f2f0ed] border-[#e5d5c3] text-[#121212] font-semibold"
+                    : "bg-white border-[#f2f0ed] text-[#7e7e7d] hover:text-[#121212]"
                 }`}
               >
                 <span className={`w-2.5 h-2.5 rounded-full ${tone.bg}`} />
@@ -497,17 +496,17 @@ export default function WallpaperGrid({
         </div>
 
         {/* Top-Level Category Horizon Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           <button
             onClick={() => {
               setSelectedCategory("all");
               setSelectedSubcategory("all");
               setDisplayCount(36);
             }}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+            className={`px-3 py-1 rounded-[32px] text-xs font-semibold whitespace-nowrap transition-all ${
               selectedCategory === "all"
-                ? "bg-white text-black font-bold shadow-md"
-                : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5"
+                ? "bg-[#121212] text-white font-medium"
+                : "bg-white text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef] border border-[#f2f0ed]"
             }`}
           >
             All Themes
@@ -522,14 +521,14 @@ export default function WallpaperGrid({
                   setSelectedSubcategory("all");
                   setDisplayCount(36);
                 }}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                className={`px-3 py-1 rounded-[32px] text-xs whitespace-nowrap transition-all flex items-center gap-1.5 ${
                   isActive
-                    ? "bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-600/30"
-                    : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5"
+                    ? "bg-[#121212] text-white font-semibold"
+                    : "bg-white text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef] border border-[#f2f0ed]"
                 }`}
               >
                 <span>{cat.name}</span>
-                <span className="text-[10px] opacity-60">({cat.count})</span>
+                <span className="text-[10px] opacity-70">({cat.count})</span>
               </button>
             );
           })}
@@ -537,8 +536,8 @@ export default function WallpaperGrid({
 
         {/* Subcategory Pills Row (When a category is active) */}
         {activeCategoryObj && activeCategoryObj.subcategories && activeCategoryObj.subcategories.length > 0 && (
-          <div className="p-3 rounded-2xl bg-indigo-950/20 border border-indigo-500/20 flex items-center gap-2 overflow-x-auto scrollbar-none animate-in fade-in duration-200">
-            <span className="text-[11px] font-bold text-indigo-300 shrink-0 uppercase tracking-wider pr-1">
+          <div className="p-3 rounded-[10px] bg-[#f2f0ed] border border-[#e5d5c3] flex items-center gap-1.5 overflow-x-auto scrollbar-none animate-in fade-in duration-150">
+            <span className="text-[11px] font-bold text-[#121212] shrink-0 uppercase tracking-wider pr-1">
               Subcategories:
             </span>
             <button
@@ -546,10 +545,10 @@ export default function WallpaperGrid({
                 setSelectedSubcategory("all");
                 setDisplayCount(36);
               }}
-              className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+              className={`px-3 py-1 rounded-[32px] text-xs font-medium whitespace-nowrap transition-all ${
                 selectedSubcategory === "all"
-                  ? "bg-indigo-600 text-white font-bold shadow-sm"
-                  : "bg-white/5 text-gray-400 hover:text-white border border-white/5"
+                  ? "bg-[#121212] text-white font-bold"
+                  : "bg-white text-[#474645] hover:text-[#121212] border border-[#e5d5c3]"
               }`}
             >
               All {activeCategoryObj.name}
@@ -563,10 +562,10 @@ export default function WallpaperGrid({
                     setSelectedSubcategory(sub.slug);
                     setDisplayCount(36);
                   }}
-                  className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                  className={`px-3 py-1 rounded-[32px] text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${
                     isSubActive
-                      ? "bg-indigo-600 text-white font-bold shadow-sm"
-                      : "bg-white/5 text-gray-300 hover:text-white hover:bg-white/10 border border-white/5"
+                      ? "bg-[#121212] text-white font-bold"
+                      : "bg-white text-[#474645] hover:text-[#121212] hover:bg-[#f6f4ef] border border-[#e5d5c3]"
                   }`}
                 >
                   <span>{sub.name}</span>
@@ -598,14 +597,14 @@ export default function WallpaperGrid({
         {/* Wallpaper Grid */}
         <div className="flex-1">
           {/* Active Filter Summary Bar */}
-          <div className="flex items-center justify-between text-xs text-gray-400 mb-4 px-1">
+          <div className="flex items-center justify-between text-xs text-[#7e7e7d] mb-4 px-1">
             <p>
-              Showing <span className="font-bold text-white">{visibleWallpapers.length}</span> of{" "}
-              <span className="font-bold text-white">{filteredWallpapers.length}</span> wallpapers
+              Showing <span className="font-bold text-[#121212]">{visibleWallpapers.length}</span> of{" "}
+              <span className="font-bold text-[#121212]">{filteredWallpapers.length}</span> wallpapers
               {selectedDevice !== "all" && ` in ${selectedDevice}`}
               {selectedCategory !== "all" && ` / ${selectedCategory}`}
               {selectedSubcategory !== "all" && ` (${selectedSubcategory})`}
-              {selectedVibe !== "all" && ` • Vibe: ${selectedVibe}`}
+              {selectedVibe !== "all" && ` • ${selectedVibe}`}
               {selectedColor !== "all" && ` • ${selectedColor} palette`}
             </p>
 
@@ -619,9 +618,9 @@ export default function WallpaperGrid({
               onlyAmoled) && (
               <button
                 onClick={resetFilters}
-                className="text-indigo-400 hover:text-indigo-300 flex items-center gap-1 font-semibold"
+                className="text-[#ff3e00] hover:underline flex items-center gap-1 font-semibold"
               >
-                <X className="w-3.5 h-3.5" />
+                <RotateCcw className="w-3 h-3" />
                 <span>Reset Filters</span>
               </button>
             )}
@@ -629,13 +628,13 @@ export default function WallpaperGrid({
 
           {/* Grid of Cards */}
           {filteredWallpapers.length === 0 ? (
-            <div className="text-center py-20 rounded-3xl glass-panel border border-white/10 p-8 space-y-4">
-              <Sparkles className="w-10 h-10 text-indigo-400 mx-auto" />
-              <h3 className="text-lg font-bold text-white">
-                No wallpapers matched that exact combination
+            <div className="text-center py-16 rounded-[10px] bg-white border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] p-8 space-y-4">
+              <span className="text-4xl block">🎨</span>
+              <h3 className="text-base font-bold text-[#121212]">
+                No wallpapers matched that exact search
               </h3>
-              <p className="text-xs text-gray-400 max-w-sm mx-auto leading-relaxed">
-                Try loosening your filters or search for something popular like:
+              <p className="text-xs text-[#7e7e7d] max-w-sm mx-auto leading-relaxed">
+                Try loosening your filters or explore one of these popular collections:
               </p>
               <div className="flex flex-wrap justify-center gap-2 pt-1">
                 {["Neon Tokyo", "Alpine Peak", "McLaren", "OLED Deep Black", "Cyberpunk", "Ocean Wave"].map((k) => (
@@ -645,7 +644,7 @@ export default function WallpaperGrid({
                       resetFilters();
                       handleSearchChange(k);
                     }}
-                    className="px-3 py-1 rounded-full text-xs bg-white/5 hover:bg-white/10 text-indigo-300 border border-white/10 transition-colors"
+                    className="px-3 py-1 rounded-[32px] text-xs bg-[#f6f4ef] hover:bg-[#edeae2] text-[#343433] border border-[#e5d5c3] transition-colors"
                   >
                     #{k}
                   </button>
@@ -654,7 +653,7 @@ export default function WallpaperGrid({
               <div>
                 <button
                   onClick={resetFilters}
-                  className="mt-4 px-6 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors shadow-lg shadow-indigo-600/30"
+                  className="mt-4 px-5 py-2 rounded-[32px] text-xs font-semibold bg-[#121212] hover:bg-[#2c2c2c] text-white transition-colors"
                 >
                   Reset All Filters
                 </button>
@@ -663,7 +662,7 @@ export default function WallpaperGrid({
           ) : (
             <>
               <div
-                className={`grid gap-4 sm:gap-5 ${
+                className={`grid gap-4 ${
                   gridDensity === "compact"
                     ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
                     : "grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4"
@@ -678,12 +677,12 @@ export default function WallpaperGrid({
                 ))}
               </div>
 
-              {/* Load More Button */}
+              {/* Load More Button - Family Sand Pill / Dark Pill */}
               {hasMore && (
                 <div className="text-center mt-12 mb-8">
                   <button
                     onClick={loadMore}
-                    className="px-8 py-3.5 rounded-2xl font-bold text-sm bg-indigo-600/15 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 shadow-xl transition-all transform hover:scale-105"
+                    className="px-6 py-2.5 rounded-[32px] font-semibold text-xs bg-[#121212] hover:bg-[#2c2c2c] text-[#fbfaf9] shadow-sm transition-all transform hover:scale-102"
                   >
                     Load More Wallpapers ({filteredWallpapers.length - displayCount} remaining)
                   </button>

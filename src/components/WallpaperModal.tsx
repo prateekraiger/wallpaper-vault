@@ -8,23 +8,22 @@ import {
   Download, 
   Heart, 
   Share2, 
-  ChevronLeft, 
-  ChevronRight, 
+  Check, 
   Monitor, 
   Smartphone, 
-  Laptop,
   Sparkles, 
-  Moon, 
-  Info, 
-  ExternalLink,
-  Check,
-  ZoomIn,
-  ZoomOut,
-  Loader2,
+  ChevronLeft, 
+  ChevronRight,
+  Maximize2,
+  Minimize2,
+  Info,
+  Layers,
   Compass,
-  Copy,
+  Palette,
+  Eye,
+  Loader2,
   Keyboard,
-  Eye
+  Moon
 } from "lucide-react";
 import { Wallpaper } from "@/types/wallpaper";
 import { showToast } from "@/components/Toast";
@@ -47,16 +46,33 @@ export default function WallpaperModal({
   onSelectRelated,
 }: WallpaperModalProps) {
   const [isLiked, setIsLiked] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [showHowTo, setShowHowTo] = useState(false);
-  const [showShortcuts, setShowShortcuts] = useState(false);
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [previewMode, setPreviewMode] = useState<"pure" | "phone" | "laptop">("pure");
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [previewMode, setPreviewMode] = useState<"pure" | "phone" | "laptop">("pure");
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [showHowTo, setShowHowTo] = useState(false);
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [modalImgSrc, setModalImgSrc] = useState<string>("");
 
-  // Toggle favorite
+  useEffect(() => {
+    if (wallpaper) {
+      setModalImgSrc(wallpaper.url);
+      setImageLoaded(false);
+      try {
+        const stored = localStorage.getItem("wallpaper_favorites");
+        if (stored) {
+          const arr = JSON.parse(stored);
+          setIsLiked(Array.isArray(arr) && arr.includes(wallpaper.id));
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [wallpaper]);
+
   const toggleLike = useCallback(() => {
     if (!wallpaper) return;
     try {
@@ -80,11 +96,10 @@ export default function WallpaperModal({
     }
   }, [wallpaper, isLiked]);
 
-  // Handle Download
   const handleDownload = useCallback(async () => {
     if (!wallpaper || isDownloading) return;
     setIsDownloading(true);
-    showToast(`Downloading "${wallpaper.title}" in full original resolution...`, "download");
+    showToast(`Downloading "${wallpaper.title}" in full resolution...`, "download");
 
     try {
       const downloadEndpoint = `/api/wallpaper/${wallpaper.id}?download=true`;
@@ -116,7 +131,6 @@ export default function WallpaperModal({
     }
   }, [wallpaper, isDownloading]);
 
-  // Cycle preview mode
   const cyclePreviewMode = useCallback(() => {
     setPreviewMode((prev) => {
       if (prev === "pure") return "phone";
@@ -125,47 +139,18 @@ export default function WallpaperModal({
     });
   }, []);
 
+  // Keyboard navigation
   useEffect(() => {
     if (!wallpaper) return;
 
-    // Reset download status on slide change
-    setIsDownloading(false);
-    setDownloadSuccess(false);
-    setIsZoomed(false);
-
-    // Auto default preview based on wallpaper device
-    if (wallpaper.device === "Mobile") {
-      setPreviewMode("pure");
-    } else {
-      setPreviewMode("pure");
-    }
-
-    // Check favorite status
-    try {
-      const stored = localStorage.getItem("wallpaper_favorites");
-      if (stored) {
-        const arr = JSON.parse(stored);
-        if (Array.isArray(arr) && arr.includes(wallpaper.id)) {
-          setIsLiked(true);
-        } else {
-          setIsLiked(false);
-        }
-      }
-    } catch (e) {
-      // ignore
-    }
-
-    // Keyboard navigation
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-
       if (e.key === "Escape") onClose();
       if (e.key === "ArrowLeft" && onPrev) onPrev();
       if (e.key === "ArrowRight" && onNext) onNext();
-      if (e.key.toLowerCase() === "d") handleDownload();
-      if (e.key.toLowerCase() === "f") toggleLike();
-      if (e.key.toLowerCase() === "p") cyclePreviewMode();
-      if (e.key === "?") setShowShortcuts((s) => !s);
+      if (e.key === "d" || e.key === "D") handleDownload();
+      if (e.key === "f" || e.key === "F") toggleLike();
+      if (e.key === "p" || e.key === "P") cyclePreviewMode();
+      if (e.key === "?") setShowShortcuts((prev) => !prev);
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -174,7 +159,6 @@ export default function WallpaperModal({
 
   if (!wallpaper) return null;
 
-  // Filter related wallpapers from same subcategory or category
   const relatedWallpapers = allWallpapers
     .filter((w) => (w.subcategorySlug === wallpaper.subcategorySlug || w.category === wallpaper.category) && w.id !== wallpaper.id)
     .slice(0, 6);
@@ -203,105 +187,105 @@ export default function WallpaperModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/94 backdrop-blur-2xl animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-[#121212]/85 backdrop-blur-md animate-in fade-in duration-150">
       {/* Background click to close */}
       <div className="absolute inset-0" onClick={onClose} />
 
       {/* Main Container */}
-      <div className="relative z-10 w-full max-w-6xl max-h-[96vh] rounded-3xl glass-panel overflow-hidden flex flex-col md:flex-row shadow-2xl border border-white/10">
+      <div className="relative z-10 w-full max-w-6xl max-h-[96vh] rounded-[10px] bg-white overflow-hidden flex flex-col md:flex-row shadow-[0_20px_60px_rgba(0,0,0,0.3)] border border-[#e5d5c3]">
         {/* Top Controls Bar */}
-        <div className="absolute top-4 right-4 z-30 flex items-center gap-2">
-          {/* Keyboard shortcut icon */}
+        <div className="absolute top-3 right-3 z-30 flex items-center gap-1.5">
           <button
             onClick={() => setShowShortcuts(!showShortcuts)}
-            className="p-2.5 rounded-full bg-black/60 hover:bg-black/90 text-gray-300 hover:text-white border border-white/15 backdrop-blur-md transition-colors"
+            className="p-2 rounded-full bg-white/90 hover:bg-white text-[#343433] border border-[#e5d5c3] shadow-xs transition-colors"
             title="Keyboard Shortcuts (?)"
           >
             <Keyboard className="w-4 h-4" />
           </button>
           
-          {/* Close Button */}
           <button
             onClick={onClose}
-            className="p-2.5 rounded-full bg-black/60 hover:bg-black text-gray-300 hover:text-white border border-white/15 backdrop-blur-md transition-colors"
+            className="p-2 rounded-full bg-white/90 hover:bg-white text-[#343433] border border-[#e5d5c3] shadow-xs transition-colors"
             title="Close (Esc)"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Keyboard Shortcuts Overlay Modal */}
         {showShortcuts && (
-          <div className="absolute inset-0 z-40 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-            <div className="max-w-sm w-full bg-[#0e1424] border border-white/15 rounded-2xl p-6 text-gray-200 space-y-4 shadow-2xl">
+          <div className="absolute inset-0 z-40 bg-[#121212]/70 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="max-w-sm w-full bg-white border border-[#e5d5c3] rounded-[10px] p-6 text-[#343433] space-y-4 shadow-xl">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-white text-base flex items-center gap-2">
-                  <Keyboard className="w-4 h-4 text-indigo-400" /> Keyboard Shortcuts
+                <h3 className="font-bold text-[#121212] text-sm flex items-center gap-2">
+                  <Keyboard className="w-4 h-4 text-[#ff3e00]" /> Keyboard Shortcuts
                 </h3>
-                <button onClick={() => setShowShortcuts(false)} className="text-gray-400 hover:text-white">
+                <button onClick={() => setShowShortcuts(false)} className="text-[#7e7e7d] hover:text-[#121212]">
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              <div className="space-y-2 text-xs divide-y divide-white/10">
+              <div className="space-y-2 text-xs divide-y divide-[#f2f0ed]">
                 <div className="flex justify-between py-1.5">
-                  <span className="text-gray-400">Next / Previous Wallpaper</span>
-                  <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-white">← / →</kbd>
+                  <span className="text-[#7e7e7d]">Next / Previous</span>
+                  <kbd className="px-2 py-0.5 rounded bg-[#f2f0ed] font-mono text-[#121212]">← / →</kbd>
                 </div>
                 <div className="flex justify-between py-1.5">
-                  <span className="text-gray-400">Download Original</span>
-                  <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-white">D</kbd>
+                  <span className="text-[#7e7e7d]">Download Original</span>
+                  <kbd className="px-2 py-0.5 rounded bg-[#f2f0ed] font-mono text-[#121212]">D</kbd>
                 </div>
                 <div className="flex justify-between py-1.5">
-                  <span className="text-gray-400">Toggle Favorite</span>
-                  <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-white">F</kbd>
+                  <span className="text-[#7e7e7d]">Toggle Favorite</span>
+                  <kbd className="px-2 py-0.5 rounded bg-[#f2f0ed] font-mono text-[#121212]">F</kbd>
                 </div>
                 <div className="flex justify-between py-1.5">
-                  <span className="text-gray-400">Toggle Device Mockup</span>
-                  <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-white">P</kbd>
+                  <span className="text-[#7e7e7d]">Toggle Mockup Mode</span>
+                  <kbd className="px-2 py-0.5 rounded bg-[#f2f0ed] font-mono text-[#121212]">P</kbd>
                 </div>
                 <div className="flex justify-between py-1.5">
-                  <span className="text-gray-400">Close Lightbox</span>
-                  <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-white">Esc</kbd>
+                  <span className="text-[#7e7e7d]">Close Lightbox</span>
+                  <kbd className="px-2 py-0.5 rounded bg-[#f2f0ed] font-mono text-[#121212]">Esc</kbd>
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Left / Center: Wallpaper Preview Display */}
-        <div className="relative flex-1 bg-black/80 flex flex-col items-center justify-between min-h-[350px] md:min-h-[640px] overflow-hidden select-none">
+        {/* Left / Center: Wallpaper Preview Canvas */}
+        <div className="relative flex-1 bg-[#121212] flex flex-col items-center justify-between min-h-[350px] md:min-h-[640px] overflow-hidden select-none">
           {/* Main Visual Frame */}
           <div className="relative w-full flex-1 flex items-center justify-center p-4 overflow-hidden">
             {previewMode === "phone" ? (
-              /* Phone Mockup Frame (iPhone 16 Pro Style) */
-              <div className="relative w-[280px] h-[580px] rounded-[52px] border-[8px] border-[#2d2d30] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden bg-black flex flex-col transition-all duration-300">
+              /* Phone Mockup Frame */
+              <div className="relative w-[280px] h-[560px] rounded-[48px] border-[8px] border-[#2d2d30] shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden bg-black flex flex-col transition-all duration-200">
                 {/* Dynamic Island */}
                 <div className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-full z-20 flex items-center justify-between px-2.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#151515]" />
-                  <span className="w-2 h-2 rounded-full bg-blue-900/60" />
+                  <span className="w-2 h-2 rounded-full bg-[#1e1e1e]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-900/60" />
                 </div>
                 {/* Status Bar Clock */}
                 <div className="absolute top-9 left-0 right-0 z-20 flex flex-col items-center text-white pointer-events-none drop-shadow-md">
-                  <span className="text-4xl font-extralight tracking-tight">9:41</span>
-                  <span className="text-[11px] font-medium text-white/80 mt-0.5">Monday, October 26</span>
+                  <span className="text-3xl font-light tracking-tight">9:41</span>
+                  <span className="text-[10px] font-medium text-white/80 mt-0.5">Monday, October 26</span>
                 </div>
                 {/* Image */}
                 <div className="relative w-full h-full">
                   <Image
-                    src={wallpaper.url}
+                    src={modalImgSrc || wallpaper.url}
                     alt={wallpaper.title}
                     fill
                     sizes="280px"
                     className="object-cover"
                     priority
+                    unoptimized
+                    onError={() => setModalImgSrc(`/api/wallpaper/${wallpaper.id}`)}
                   />
                 </div>
                 {/* Lockscreen Home Bar */}
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/60 rounded-full z-20 pointer-events-none" />
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-28 h-1 bg-white/70 rounded-full z-20 pointer-events-none" />
               </div>
             ) : previewMode === "laptop" ? (
-              /* Laptop Mockup Frame (MacBook Pro Style) */
-              <div className="relative w-[90%] max-w-[560px] aspect-[16/10] rounded-xl border-[6px] border-[#3a3a3c] shadow-[0_30px_70px_rgba(0,0,0,0.95)] overflow-hidden bg-black flex flex-col transition-all duration-300">
+              /* Laptop Mockup Frame */
+              <div className="relative w-[90%] max-w-[560px] aspect-[16/10] rounded-xl border-[6px] border-[#3a3a3c] shadow-[0_25px_60px_rgba(0,0,0,0.8)] overflow-hidden bg-black flex flex-col transition-all duration-200">
                 {/* Top Notch / Menu Bar */}
                 <div className="h-5 bg-black/60 backdrop-blur-md border-b border-white/10 flex items-center justify-between px-3 z-20 text-[9px] text-white/80 pointer-events-none">
                   <span className="font-semibold"> Finder File Edit View Window</span>
@@ -310,16 +294,18 @@ export default function WallpaperModal({
                 {/* Image */}
                 <div className="relative w-full h-full">
                   <Image
-                    src={wallpaper.url}
+                    src={modalImgSrc || wallpaper.url}
                     alt={wallpaper.title}
                     fill
                     sizes="560px"
                     className="object-cover"
                     priority
+                    unoptimized
+                    onError={() => setModalImgSrc(`/api/wallpaper/${wallpaper.id}`)}
                   />
                 </div>
                 {/* Subtle Dock */}
-                <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-xl bg-white/15 backdrop-blur-xl border border-white/20 flex gap-2 z-20 pointer-events-none">
+                <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-xl bg-white/15 backdrop-blur-md border border-white/20 flex gap-2 z-20 pointer-events-none">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="w-3.5 h-3.5 rounded-md bg-white/30" />
                   ))}
@@ -328,80 +314,76 @@ export default function WallpaperModal({
             ) : (
               /* Pure Canvas Fullscreen Preview */
               <div
-                className={`relative w-full h-[55vh] md:h-[72vh] flex items-center justify-center transition-transform duration-300 ${
-                  isZoomed ? "scale-125 cursor-zoom-out" : "scale-100 cursor-zoom-in"
+                className={`relative w-full h-[55vh] md:h-[72vh] flex items-center justify-center transition-transform duration-200 ${
+                  isZoomed ? "scale-120 cursor-zoom-out" : "scale-100 cursor-zoom-in"
                 }`}
                 onClick={() => setIsZoomed(!isZoomed)}
               >
                 <Image
-                  src={wallpaper.url}
+                  src={modalImgSrc || wallpaper.url}
                   alt={wallpaper.title}
                   fill
                   sizes="(max-width: 1024px) 100vw, 75vw"
                   className="object-contain"
                   priority
+                  unoptimized
+                  onError={() => setModalImgSrc(`/api/wallpaper/${wallpaper.id}`)}
                 />
               </div>
             )}
           </div>
 
-          {/* Bottom Controls Bar inside image area */}
-          <div className="w-full px-4 py-3 bg-black/70 border-t border-white/5 flex items-center justify-between z-20 flex-wrap gap-2">
-            {/* View Mode Switcher */}
+          {/* Bottom Switcher Bar inside Image Stage */}
+          <div className="w-full px-4 py-2.5 bg-[#000000]/80 border-t border-white/10 flex items-center justify-between z-20 flex-wrap gap-2">
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setPreviewMode("pure")}
-                className={`px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 transition-all ${
+                className={`px-2.5 py-1 rounded-[32px] text-xs font-medium flex items-center gap-1 transition-all ${
                   previewMode === "pure"
-                    ? "bg-indigo-600 text-white font-bold"
-                    : "bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white"
+                    ? "bg-white text-[#121212] font-semibold"
+                    : "bg-white/10 hover:bg-white/20 text-white/80"
                 }`}
                 title="Fit Image (Original Canvas)"
               >
-                <Eye className="w-3.5 h-3.5" />
+                <Eye className="w-3 h-3" />
                 <span>Canvas</span>
               </button>
 
               <button
                 onClick={() => setPreviewMode("phone")}
-                className={`px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 transition-all ${
+                className={`px-2.5 py-1 rounded-[32px] text-xs font-medium flex items-center gap-1 transition-all ${
                   previewMode === "phone"
-                    ? "bg-indigo-600 text-white font-bold"
-                    : "bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white"
+                    ? "bg-white text-[#121212] font-semibold"
+                    : "bg-white/10 hover:bg-white/20 text-white/80"
                 }`}
-                title="Preview inside iPhone Frame"
+                title="Preview in Phone Frame"
               >
-                <Smartphone className="w-3.5 h-3.5" />
+                <Smartphone className="w-3 h-3" />
                 <span>Phone</span>
               </button>
 
               <button
                 onClick={() => setPreviewMode("laptop")}
-                className={`px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 transition-all ${
+                className={`px-2.5 py-1 rounded-[32px] text-xs font-medium flex items-center gap-1 transition-all ${
                   previewMode === "laptop"
-                    ? "bg-indigo-600 text-white font-bold"
-                    : "bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white"
+                    ? "bg-white text-[#121212] font-semibold"
+                    : "bg-white/10 hover:bg-white/20 text-white/80"
                 }`}
-                title="Preview inside Laptop Frame"
+                title="Preview in Laptop Frame"
               >
-                <Laptop className="w-3.5 h-3.5" />
+                <Monitor className="w-3 h-3" />
                 <span>Laptop</span>
               </button>
             </div>
 
-            {/* Zoom / Info */}
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsZoomed(!isZoomed)}
-                className="p-1.5 px-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white backdrop-blur-md border border-white/10 text-xs flex items-center gap-1.5 transition-colors"
+                className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                title={isZoomed ? "Reset Zoom" : "Zoom In"}
               >
-                {isZoomed ? <ZoomOut className="w-3.5 h-3.5" /> : <ZoomIn className="w-3.5 h-3.5" />}
-                <span>{isZoomed ? "Fit" : "100%"}</span>
+                {isZoomed ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
               </button>
-
-              <span className="text-[11px] text-gray-400 font-mono hidden sm:inline">
-                Press <kbd className="px-1.5 py-0.5 rounded bg-white/10">?</kbd> for keys
-              </span>
             </div>
           </div>
 
@@ -412,10 +394,10 @@ export default function WallpaperModal({
                 e.stopPropagation();
                 onPrev();
               }}
-              className="absolute left-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md border border-white/10 transition-transform hover:scale-110 active:scale-95"
+              className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/90 hover:bg-white text-[#121212] shadow-md transition-transform hover:scale-105 active:scale-95"
               title="Previous Wallpaper (←)"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4" />
             </button>
           )}
 
@@ -425,187 +407,144 @@ export default function WallpaperModal({
                 e.stopPropagation();
                 onNext();
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md border border-white/10 transition-transform hover:scale-110 active:scale-95"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/90 hover:bg-white text-[#121212] shadow-md transition-transform hover:scale-105 active:scale-95"
               title="Next Wallpaper (→)"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4" />
             </button>
           )}
         </div>
 
-        {/* Right: Metadata & Actions Panel */}
-        <div className="w-full md:w-84 lg:w-96 bg-[#0a0f1e] border-t md:border-t-0 md:border-l border-white/10 flex flex-col justify-between overflow-y-auto max-h-[50vh] md:max-h-[85vh] p-6 space-y-6">
-          <div className="space-y-6">
-            {/* Header / Title */}
+        {/* Right: Family Parchment Metadata & Actions Panel */}
+        <div className="w-full md:w-80 lg:w-96 bg-[#fbfaf9] border-t md:border-t-0 md:border-l border-[#f2f0ed] flex flex-col justify-between overflow-y-auto max-h-[50vh] md:max-h-[85vh] p-6 space-y-5">
+          <div className="space-y-5">
+            {/* Title & Category Tags */}
             <div>
-              {/* Category, Subcategory & Device Tags */}
-              <div className="flex flex-wrap items-center gap-1.5 mb-2.5">
-                <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+              <div className="flex flex-wrap items-center gap-1.5 mb-2">
+                <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#f2f0ed] text-[#343433] border border-[#e5d5c3]">
                   {wallpaper.device === "Desktop" ? (
                     <>
-                      <Monitor className="w-3 h-3" /> Desktop
+                      <Monitor className="w-3 h-3 text-[#0086fc]" /> Desktop
                     </>
                   ) : wallpaper.device === "Square & Avatars" ? (
                     <>
-                      <span className="w-2 h-2 rounded-xs border border-amber-400" /> Square
+                      <span className="w-2 h-2 rounded-xs bg-[#ffcd6c]" /> Square
                     </>
                   ) : (
                     <>
-                      <Smartphone className="w-3 h-3" /> Mobile
+                      <Smartphone className="w-3 h-3 text-[#ff58ae]" /> Mobile
                     </>
                   )}
                 </span>
 
                 <Link
                   href={`/category/${wallpaper.categorySlug}`}
-                  className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10 transition-colors flex items-center gap-1"
+                  className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-white hover:bg-[#f6f4ef] text-[#474645] border border-[#f2f0ed] transition-colors"
                 >
                   {wallpaper.category}
                 </Link>
 
                 {wallpaper.subcategory && (
-                  <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-violet-500/10 text-violet-300 border border-violet-500/20">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[#f6f4ef] text-[#7e7e7d] border border-[#e5d5c3]">
                     {wallpaper.subcategory}
                   </span>
                 )}
               </div>
 
-              <h2 className="text-xl font-bold text-white leading-snug tracking-tight">
+              <h2 className="text-lg font-bold text-[#121212] leading-snug tracking-tight">
                 {wallpaper.title}
               </h2>
 
               {wallpaper.vibe && (
-                <p className="mt-1.5 text-xs text-indigo-300/80 font-medium flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <p className="mt-1 text-xs text-[#7e7e7d] font-medium flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-[#ffbb26]" />
                   <span>Vibe: {wallpaper.vibe}</span>
                 </p>
               )}
             </div>
 
-            {/* Quick Specs Grid */}
-            <div className="grid grid-cols-2 gap-2.5 p-3.5 rounded-2xl bg-white/[0.03] border border-white/5 text-xs">
+            {/* Quick Specs Grid - White Card with Inset Border */}
+            <div className="grid grid-cols-2 gap-2 p-3 rounded-[10px] bg-white border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] text-xs">
               <div>
-                <span className="text-gray-400 block text-[11px]">Resolution</span>
-                <span className="font-bold text-gray-200">
-                  {wallpaper.width} × {wallpaper.height}
+                <span className="text-[#7e7e7d] block text-[11px]">Resolution</span>
+                <span className="font-semibold text-[#121212]">
+                  {wallpaper.width}×{wallpaper.height}
                   {wallpaper.is4K && (
-                    <span className="ml-1 px-1.5 py-0.2 rounded text-[9px] bg-amber-500/20 text-amber-300 font-bold">
-                      4K UHD
+                    <span className="ml-1 px-1.5 py-0.2 rounded text-[9px] bg-[#ffbb26] text-[#121212] font-bold">
+                      4K
                     </span>
                   )}
                 </span>
               </div>
               <div>
-                <span className="text-gray-400 block text-[11px]">Aspect Ratio</span>
-                <span className="font-bold text-gray-200 font-mono">
+                <span className="text-[#7e7e7d] block text-[11px]">Aspect Ratio</span>
+                <span className="font-semibold text-[#121212] font-mono">
                   {wallpaper.aspectRatio}
                 </span>
               </div>
               <div>
-                <span className="text-gray-400 block text-[11px]">File Size</span>
-                <span className="font-bold text-gray-200">
+                <span className="text-[#7e7e7d] block text-[11px]">File Size</span>
+                <span className="font-semibold text-[#121212]">
                   {formatFileSize(wallpaper.sizeBytes)}
                 </span>
               </div>
               <div>
-                <span className="text-gray-400 block text-[11px]">OLED / Dark</span>
-                <span className="font-bold text-gray-200 flex items-center gap-1">
+                <span className="text-[#7e7e7d] block text-[11px]">Format / Mode</span>
+                <span className="font-semibold text-[#121212] flex items-center gap-1">
                   {wallpaper.isAmoled ? (
-                    <span className="text-emerald-400 flex items-center gap-1">
+                    <span className="text-[#00ca48] font-semibold flex items-center gap-0.5">
                       <Moon className="w-3 h-3" /> AMOLED
                     </span>
                   ) : (
-                    "Standard"
+                    wallpaper.format.toUpperCase()
                   )}
                 </span>
               </div>
             </div>
 
-            {/* Interactive Color Palette with One-Click Copy */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
-                  Color Palette
-                </span>
-                <span className="text-[10px] text-gray-400 font-mono">Click to copy HEX</span>
-              </div>
-              <div className="flex items-center gap-2">
-                {wallpaper.colorPalette?.map((c, i) => (
-                  <button
-                    key={i}
-                    onClick={() => copyColor(c)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-500/50 transition-all group"
-                    title={`Click to copy ${c}`}
-                  >
-                    <span
-                      className="w-3 h-3 rounded-full border border-white/20 shadow-sm shrink-0"
-                      style={{ backgroundColor: c }}
-                    />
-                    <span className="text-[10px] font-mono text-gray-300 uppercase group-hover:text-white">
-                      {copiedColor === c ? "Copied!" : c}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Tags */}
-            {wallpaper.tags && wallpaper.tags.length > 0 && (
-              <div>
-                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-2">
-                  Keywords & Signals
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {wallpaper.tags.slice(0, 8).map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-[11px] px-2.5 py-0.5 rounded-md bg-white/5 text-gray-300 border border-white/5 hover:border-white/20 transition-colors"
+            {/* Interactive Color Palette */}
+            {wallpaper.colorPalette && wallpaper.colorPalette.length > 0 && (
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-[#7e7e7d] uppercase tracking-wider block">
+                    Extracted Palette
+                  </span>
+                  <span className="text-[10px] text-[#7e7e7d] font-mono">Click to copy</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  {wallpaper.colorPalette.map((c, i) => (
+                    <button
+                      key={i}
+                      onClick={() => copyColor(c)}
+                      className="flex-1 flex items-center justify-center gap-1 py-1 px-1.5 rounded-[6px] bg-white hover:bg-[#f6f4ef] border border-[#f2f0ed] transition-all"
+                      title={`Copy ${c}`}
                     >
-                      #{tag}
-                    </span>
+                      <span
+                        className="w-2.5 h-2.5 rounded-full border border-black/10 shrink-0"
+                        style={{ backgroundColor: c }}
+                      />
+                      <span className="text-[10px] font-mono text-[#343433] uppercase truncate">
+                        {copiedColor === c ? "✓" : c}
+                      </span>
+                    </button>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* How to set as wallpaper helper */}
-            <div>
-              <button
-                onClick={() => setShowHowTo(!showHowTo)}
-                className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 font-medium"
-              >
-                <Info className="w-3.5 h-3.5" />
-                <span>How to set as wallpaper?</span>
-              </button>
-
-              {showHowTo && (
-                <div className="mt-2.5 p-3.5 rounded-xl bg-indigo-950/40 border border-indigo-500/20 text-xs text-gray-300 space-y-1.5 animate-in fade-in duration-200">
-                  <p>
-                    <strong>Windows / Mac:</strong> Download the full image, right-click the saved file, and select <em>&quot;Set as desktop background&quot;</em>.
-                  </p>
-                  <p>
-                    <strong>iPhone / Android:</strong> Download to Photos, open Settings &gt; Wallpaper to set as Lock Screen or Home Screen.
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Related Wallpapers Row */}
+            {/* Related Wallpapers */}
             {relatedWallpapers.length > 0 && onSelectRelated && (
-              <div className="pt-2 border-t border-white/5">
-                <div className="flex items-center justify-between text-xs font-bold text-gray-300 mb-2.5">
-                  <span className="flex items-center gap-1.5">
-                    <Compass className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>More in {wallpaper.subcategory || wallpaper.category}</span>
-                  </span>
-                  <span className="text-[10px] text-gray-400 font-normal">Related</span>
+              <div className="pt-2 border-t border-[#f2f0ed]">
+                <div className="flex items-center justify-between text-xs font-semibold text-[#343433] mb-2">
+                  <span>More in {wallpaper.subcategory || wallpaper.category}</span>
+                  <span className="text-[10px] text-[#7e7e7d]">Related</span>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {relatedWallpapers.map((rel) => (
                     <div
                       key={rel.id}
                       onClick={() => onSelectRelated(rel)}
-                      className="relative aspect-video rounded-lg overflow-hidden border border-white/10 hover:border-indigo-500 cursor-pointer transition-all transform hover:scale-105 group"
+                      className="relative aspect-video rounded-[6px] overflow-hidden border border-[#f2f0ed] hover:border-[#121212] cursor-pointer transition-all hover:scale-102 group bg-[#f2f0ed]"
                       title={rel.title}
                     >
                       <Image
@@ -614,12 +553,8 @@ export default function WallpaperModal({
                         fill
                         sizes="100px"
                         className="object-cover"
+                        unoptimized
                       />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="text-[9px] text-white font-bold px-1 text-center truncate">
-                          {rel.title}
-                        </span>
-                      </div>
                     </div>
                   ))}
                 </div>
@@ -627,58 +562,60 @@ export default function WallpaperModal({
             )}
           </div>
 
-          {/* Action Buttons (Bottom) */}
-          <div className="pt-6 space-y-2.5 border-t border-white/5">
+          {/* Action Buttons - Dark Pill & Sand Pill */}
+          <div className="pt-4 space-y-2 border-t border-[#f2f0ed]">
+            {/* Primary Action Button (Dark Pill) */}
             <button
               onClick={handleDownload}
               disabled={isDownloading}
-              className={`w-full py-3.5 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-xl transform active:scale-98 transition-all ${
+              className={`w-full py-2.5 px-4 rounded-[32px] font-medium text-xs flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all ${
                 downloadSuccess
-                  ? "bg-green-600 text-white shadow-green-600/30"
+                  ? "bg-[#00c978] text-white"
                   : isDownloading
-                  ? "bg-indigo-700 text-indigo-200 cursor-wait"
-                  : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/40"
+                  ? "bg-[#f2f0ed] text-[#474645] cursor-wait"
+                  : "bg-[#121212] hover:bg-[#2c2c2c] text-white"
               }`}
             >
               {isDownloading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   <span>Downloading Original Image...</span>
                 </>
               ) : downloadSuccess ? (
                 <>
-                  <Check className="w-4 h-4 text-white" />
+                  <Check className="w-3.5 h-3.5 text-white" />
                   <span>Saved to Downloads!</span>
                 </>
               ) : (
                 <>
-                  <Download className="w-4 h-4" />
+                  <Download className="w-3.5 h-3.5" />
                   <span>Download Full Resolution ({wallpaper.width}×{wallpaper.height})</span>
                 </>
               )}
             </button>
 
+            {/* Secondary Actions (Sand Pill) */}
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={toggleLike}
-                className={`py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 border transition-all ${
+                className={`py-2 px-3 rounded-[32px] text-xs font-medium flex items-center justify-center gap-1.5 border transition-all ${
                   isLiked
-                    ? "bg-rose-500/15 text-rose-300 border-rose-500/30"
-                    : "bg-white/5 text-gray-300 hover:text-white border-white/10 hover:bg-white/10"
+                    ? "bg-[#ff2b3a] text-white border-[#ff2b3a]"
+                    : "bg-[#f6f4ef] hover:bg-[#edeae2] text-[#343433] border-[#e5d5c3]"
                 }`}
               >
-                <Heart className={`w-3.5 h-3.5 ${isLiked ? "fill-rose-500 text-rose-500" : ""}`} />
+                <Heart className={`w-3.5 h-3.5 ${isLiked ? "fill-white" : ""}`} />
                 <span>{isLiked ? "Saved" : "Favorite (F)"}</span>
               </button>
 
               <button
                 onClick={handleShare}
-                className="py-2.5 px-3 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10 flex items-center justify-center gap-2 transition-all"
+                className="py-2 px-3 rounded-[32px] text-xs font-medium bg-[#f6f4ef] hover:bg-[#edeae2] text-[#343433] border border-[#e5d5c3] flex items-center justify-center gap-1.5 transition-all"
               >
                 {copied ? (
                   <>
-                    <Check className="w-3.5 h-3.5 text-green-400" />
-                    <span className="text-green-300">Copied!</span>
+                    <Check className="w-3.5 h-3.5 text-[#00c978]" />
+                    <span className="text-[#00c978]">Copied!</span>
                   </>
                 ) : (
                   <>

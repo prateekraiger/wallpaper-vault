@@ -6,13 +6,11 @@ import {
   Smartphone, 
   Layers, 
   FolderTree, 
-  Download, 
+  ArrowRight,
+  Download,
   CheckCircle2,
-  Compass,
-  Zap,
-  Moon,
-  Coffee,
-  Palette
+  Sliders,
+  FolderOpen
 } from "lucide-react";
 import { getAllWallpapers, getCategories, getDeviceCounts } from "@/lib/wallpapers";
 import WallpaperGrid from "@/components/WallpaperGrid";
@@ -22,92 +20,310 @@ export default function HomePage() {
   const categories = getCategories();
   const deviceCounts = getDeviceCounts();
 
-  // Curated human mood collections
-  const moodPills = [
-    { name: "Late Night Focus", icon: "🌙", count: "751+", desc: "Pure black OLED & minimalist dark vibes" },
-    { name: "High Energy & Adrenaline", icon: "⚡", count: "450+", desc: "Supercars, drift legends & battle heroes" },
-    { name: "Zen & Serenity", icon: "🌿", count: "315+", desc: "Alpine peaks, calm oceans & misty pines" },
-    { name: "Cozy & Lo-Fi", icon: "☕", count: "230+", desc: "Rainy balconies & aesthetic warm rooms" },
-    { name: "Futuristic & Cyber", icon: "🔮", count: "280+", desc: "Neo-Tokyo towers & synthwave grids" },
-    { name: "Creative Spark", icon: "🎨", count: "2,000+", desc: "3D geometries & liquid fluid art" },
-  ];
-
   return (
-    <div className="space-y-12">
-      {/* Hero Header */}
-      <section className="relative rounded-3xl overflow-hidden glass-panel border border-white/10 p-8 sm:p-12 text-center">
-        {/* Ambient Gradient Glows */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none -z-10" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none -z-10" />
-
-        <div className="max-w-3xl mx-auto space-y-6">
-          {/* Top Pill */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-            <span>4,891 High-Resolution Wallpapers Categorized</span>
-          </div>
-
-          {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
-            Curated Wallpapers for{" "}
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Desktop & Mobile
-            </span>
-          </h1>
-
-          {/* Subtitle */}
-          <p className="text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl mx-auto">
-            Discover thousands of stunning 4K and AMOLED wallpapers, systematically organized into dedicated folders for PC monitors, smartphones, and 10 visual themes with subcategory navigation.
-          </p>
-
-          {/* Device Quick Stats Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 max-w-2xl mx-auto">
-            <Link
-              href="/desktop"
-              className="p-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/5 transition-all text-center group"
-            >
-              <Monitor className="w-5 h-5 text-indigo-400 mx-auto mb-1 group-hover:scale-110 transition-transform" />
-              <div className="font-extrabold text-white text-base">
-                {deviceCounts.Desktop.toLocaleString()}
-              </div>
-              <div className="text-[11px] text-gray-400">Desktop (PC)</div>
-            </Link>
-
-            <Link
-              href="/mobile"
-              className="p-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/5 transition-all text-center group"
-            >
-              <Smartphone className="w-5 h-5 text-purple-400 mx-auto mb-1 group-hover:scale-110 transition-transform" />
-              <div className="font-extrabold text-white text-base">
-                {deviceCounts.Mobile.toLocaleString()}
-              </div>
-              <div className="text-[11px] text-gray-400">Mobile (Phone)</div>
-            </Link>
-
-            <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 text-center">
-              <Layers className="w-5 h-5 text-amber-400 mx-auto mb-1" />
-              <div className="font-extrabold text-white text-base">
-                {deviceCounts["Square & Avatars"].toLocaleString()}
-              </div>
-              <div className="text-[11px] text-gray-400">Square & Avatars</div>
+    <div className="space-y-16">
+      {/* Storybook Hero Section with Flanking Mascot Clusters */}
+      <section className="relative pt-6 pb-4 sm:pt-10 sm:pb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          {/* Left Storybook Mascot Cluster (Desktop) */}
+          <div className="hidden lg:flex lg:col-span-3 flex-col items-center justify-center relative select-none">
+            {/* Confetti: Sky Blue Star */}
+            <div className="absolute -top-4 left-4 animate-story-float">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="#64c6ff" stroke="#343433" strokeWidth="1.5">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
             </div>
 
-            <Link
-              href="/folders"
-              className="p-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/5 transition-all text-center group"
-            >
-              <FolderTree className="w-5 h-5 text-emerald-400 mx-auto mb-1 group-hover:scale-110 transition-transform" />
-              <div className="font-extrabold text-white text-base">
-                {categories.length}
+            {/* Mascot 1: Orange Smiling Cloud */}
+            <div className="w-40 h-28 rounded-[48px] bg-[#ff3e00] border-2 border-[#343433] relative flex items-center justify-center shadow-xs -rotate-3 transition-transform hover:rotate-0">
+              {/* Cloud face */}
+              <div className="flex flex-col items-center gap-1">
+                <div className="flex gap-4">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#343433]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#343433]" />
+                </div>
+                <div className="w-4 h-2 border-b-2 border-[#343433] rounded-full" />
               </div>
-              <div className="text-[11px] text-gray-400">Theme Folders</div>
+              <span className="absolute -bottom-2 -left-2 text-xs font-mono px-2 py-0.5 rounded-full bg-white text-[#343433] border border-[#343433] font-bold">
+                hi!
+              </span>
+            </div>
+
+            {/* Mascot 2: Smiling Green Blob */}
+            <div className="mt-4 -mr-8 w-24 h-24 rounded-[72px] bg-[#00c978] border-2 border-[#343433] flex items-center justify-center relative rotate-6 shadow-xs">
+              <div className="flex flex-col items-center gap-1">
+                <div className="flex gap-3">
+                  <span className="w-2 h-2 rounded-full bg-[#343433]" />
+                  <span className="w-2 h-2 rounded-full bg-[#343433]" />
+                </div>
+                <div className="w-3.5 h-1.5 border-b-2 border-[#343433] rounded-full" />
+              </div>
+            </div>
+
+            {/* Confetti: Yellow Sun Coin */}
+            <div className="absolute bottom-2 left-6">
+              <div className="w-7 h-7 rounded-full bg-[#ffcd6c] border-2 border-[#343433] flex items-center justify-center font-bold text-[10px] text-[#343433]">
+                4K
+              </div>
+            </div>
+          </div>
+
+          {/* Centered Headline + Subtitle + Action Buttons */}
+          <div className="lg:col-span-6 text-center space-y-6 max-w-xl mx-auto">
+            {/* Top Tag Surface */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[32px] bg-[#f6f4ef] border border-[#e5d5c3] text-[#343433] text-xs font-medium">
+              <span className="w-2 h-2 rounded-full bg-[#00c978]" />
+              <span>4,891 Curated 4K Wallpapers Cataloged</span>
+            </div>
+
+            {/* Hero Heading in Family Character */}
+            <h1 className="text-4xl sm:text-5xl lg:text-5xl font-semibold text-[#121212] tracking-tight leading-[1.1]">
+              A warm storybook vault for your screens.
+            </h1>
+
+            {/* Subtitle in Body Brown */}
+            <p className="text-[16px] sm:text-[17px] text-[#474645] leading-relaxed max-w-md mx-auto">
+              Systematically organized into dedicated directories for PC monitors, phones, and 10 human-classified themes. No ads, pure high-res paper aesthetics.
+            </p>
+
+            {/* Action Buttons: Dark Pill + Sand Pill */}
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <a
+                href="#explorer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[32px] bg-[#121212] hover:bg-[#2c2c2c] text-[#fbfaf9] text-[14px] font-medium shadow-sm transition-all active:scale-95"
+              >
+                <span>Explore Wallpapers</span>
+                <ArrowRight className="w-4 h-4" />
+              </a>
+
+              <Link
+                href="/folders"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[32px] bg-[#f6f4ef] hover:bg-[#edeae2] text-[#121212] border border-[#e5d5c3] text-[14px] font-medium transition-all"
+              >
+                <FolderTree className="w-4 h-4 text-[#ff3e00]" />
+                <span>Directory Tree</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Right Storybook Mascot Cluster (Desktop) */}
+          <div className="hidden lg:flex lg:col-span-3 flex-col items-center justify-center relative select-none">
+            {/* Confetti: Pink Heart */}
+            <div className="absolute -top-3 right-8 animate-story-float">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="#ff58ae" stroke="#343433" strokeWidth="1.5">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+            </div>
+
+            {/* Mascot 3: Flower Character */}
+            <div className="w-36 h-36 relative flex items-center justify-center">
+              {/* Petals */}
+              <div className="absolute inset-0 rounded-[40px] bg-[#ff58ae] border-2 border-[#343433] rotate-45" />
+              <div className="absolute inset-0 rounded-[40px] bg-[#ff58ae] border-2 border-[#343433]" />
+              {/* Flower Center with face */}
+              <div className="relative z-10 w-20 h-20 rounded-[20px] bg-[#ffcd6c] border-2 border-[#343433] flex flex-col items-center justify-center shadow-inner">
+                <div className="flex gap-3 mb-1">
+                  <span className="w-2 h-2 rounded-full bg-[#343433]" />
+                  <span className="w-2 h-2 rounded-full bg-[#343433]" />
+                </div>
+                <div className="w-3 h-1.5 border-b-2 border-[#343433] rounded-full" />
+              </div>
+            </div>
+
+            {/* Mascot 4: Yellow Triangle Character */}
+            <div className="mt-3 -ml-6 w-24 h-20 bg-[#ffcd6c] border-2 border-[#343433] rounded-[24px] relative flex items-center justify-center -rotate-6 shadow-xs">
+              <div className="flex flex-col items-center">
+                <div className="flex gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#343433]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#343433]" />
+                </div>
+                <div className="w-2.5 h-1 border-b-2 border-[#343433] rounded-full mt-0.5" />
+              </div>
+              {/* Little stick legs */}
+              <span className="absolute -bottom-2 left-6 w-0.5 h-2.5 bg-[#343433]" />
+              <span className="absolute -bottom-2 right-6 w-0.5 h-2.5 bg-[#343433]" />
+            </div>
+
+            {/* Confetti: Alt Blue Pill */}
+            <div className="absolute bottom-1 right-4">
+              <span className="px-2 py-0.5 rounded-full bg-[#64c6ff] border border-[#343433] text-[10px] font-bold text-[#343433]">
+                HD
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Stats Grid: White Cards with 1px Inset Border */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-10 max-w-4xl mx-auto">
+          <Link
+            href="/desktop"
+            className="p-4 rounded-[10px] bg-white border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] hover:border-[#e5d5c3] transition-all text-center group"
+          >
+            <div className="w-8 h-8 rounded-full bg-[#0086fc]/10 text-[#0086fc] flex items-center justify-center mx-auto mb-2">
+              <Monitor className="w-4 h-4" />
+            </div>
+            <div className="font-bold text-[#121212] text-lg">
+              {deviceCounts.Desktop.toLocaleString()}
+            </div>
+            <div className="text-[12px] text-[#7e7e7d] mt-0.5">Desktop (PC)</div>
+          </Link>
+
+          <Link
+            href="/mobile"
+            className="p-4 rounded-[10px] bg-white border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] hover:border-[#e5d5c3] transition-all text-center group"
+          >
+            <div className="w-8 h-8 rounded-full bg-[#ff58ae]/10 text-[#ff58ae] flex items-center justify-center mx-auto mb-2">
+              <Smartphone className="w-4 h-4" />
+            </div>
+            <div className="font-bold text-[#121212] text-lg">
+              {deviceCounts.Mobile.toLocaleString()}
+            </div>
+            <div className="text-[12px] text-[#7e7e7d] mt-0.5">Mobile (Phone)</div>
+          </Link>
+
+          <div className="p-4 rounded-[10px] bg-white border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] text-center">
+            <div className="w-8 h-8 rounded-full bg-[#ffbb26]/10 text-[#ffbb26] flex items-center justify-center mx-auto mb-2">
+              <Layers className="w-4 h-4" />
+            </div>
+            <div className="font-bold text-[#121212] text-lg">
+              {deviceCounts["Square & Avatars"].toLocaleString()}
+            </div>
+            <div className="text-[12px] text-[#7e7e7d] mt-0.5">Square & Avatars</div>
+          </div>
+
+          <Link
+            href="/folders"
+            className="p-4 rounded-[10px] bg-white border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] hover:border-[#e5d5c3] transition-all text-center group"
+          >
+            <div className="w-8 h-8 rounded-full bg-[#00c978]/10 text-[#00c978] flex items-center justify-center mx-auto mb-2">
+              <FolderTree className="w-4 h-4" />
+            </div>
+            <div className="font-bold text-[#121212] text-lg">
+              {categories.length} Folders
+            </div>
+            <div className="text-[12px] text-[#7e7e7d] mt-0.5">Thematic Structure</div>
+          </Link>
+        </div>
+      </section>
+
+      {/* Signature Family Feature Row: Dark Anchor Card + 2 White Feature Cards */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Dark Feature Card (The only dark surface on the page) */}
+        <div className="rounded-[10px] bg-[#121212] text-white p-6 shadow-[0_4px_24px_rgba(0,0,0,0.12)] flex flex-col justify-between">
+          <div>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-[#ffbb26] block mb-1">
+              File Architecture
+            </span>
+            <h3 className="text-lg font-bold text-white mb-4">
+              Direct File Access
+            </h3>
+            
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-[#0086fc] flex items-center justify-center text-white shrink-0">
+                  <Monitor className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-white">Desktop 16:9 & Ultrawide</p>
+                  <p className="text-[10px] text-white/60">Categorized on disk</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-[#ff58ae] flex items-center justify-center text-white shrink-0">
+                  <Smartphone className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-white">Mobile 9:16 Vertical</p>
+                  <p className="text-[10px] text-white/60">Optimized for iOS & Android</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-[#00ca48] flex items-center justify-center text-white shrink-0">
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-white">Pure AMOLED Blacks</p>
+                  <p className="text-[10px] text-white/60">Battery-friendly true black</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-4 mt-4 border-t border-white/10">
+            <Link href="/folders" className="family-demo-link text-xs flex items-center gap-1">
+              <span>Explore physical directory tree</span>
+              <ArrowRight className="w-3 h-3" />
             </Link>
+          </div>
+        </div>
+
+        {/* Feature Card 2: Hairline Inset White Card */}
+        <div className="rounded-[10px] bg-white p-6 border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] flex flex-col justify-between">
+          <div>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-[#0086fc] block mb-1">
+              Taxonomy
+            </span>
+            <h3 className="text-lg font-bold text-[#121212] mb-2">
+              Human-Curated Subcategories
+            </h3>
+            <p className="text-xs text-[#474645] leading-relaxed mb-4">
+              Every folder contains rich subgenres: from JDM legends and Cyberpunk neo-Tokyo to Lo-Fi balconies and Alpine lakes.
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {["Supercars", "Neo-Tokyo", "Alpine Lakes", "Samurai", "Lo-Fi Rooms"].map((t) => (
+                <span key={t} className="text-[11px] px-2 py-0.5 rounded-[4px] bg-[#f6f4ef] text-[#474645] border border-[#e5d5c3]">
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="pt-4 mt-4 border-t border-[#f2f0ed]">
+            <Link href="/category/anime-manga" className="family-demo-link text-xs flex items-center gap-1">
+              <span>View theme breakdown</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Feature Card 3: Hairline Inset White Card */}
+        <div className="rounded-[10px] bg-white p-6 border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] flex flex-col justify-between">
+          <div>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-[#00c978] block mb-1">
+              Resolution
+            </span>
+            <h3 className="text-lg font-bold text-[#121212] mb-2">
+              Original Master Files
+            </h3>
+            <p className="text-xs text-[#474645] leading-relaxed mb-4">
+              Download clean, uncompressed master wallpaper files straight from disk without quality loss, watermarks, or sign-ups.
+            </p>
+            <div className="p-3 rounded-[6px] bg-[#f2f0ed] text-[11px] text-[#474645] space-y-1 font-mono">
+              <div>✓ 7680×4320 (8K)</div>
+              <div>✓ 3840×2160 (4K UHD)</div>
+              <div>✓ Direct instantaneous download</div>
+            </div>
+          </div>
+          <div className="pt-4 mt-4 border-t border-[#f2f0ed]">
+            <a href="#explorer" className="family-demo-link text-xs flex items-center gap-1">
+              <span>Jump to wallpapers</span>
+              <ArrowRight className="w-3 h-3" />
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Main Wallpaper Explorer */}
-      <section>
+      {/* Main Wallpaper Explorer Grid */}
+      <section id="explorer" className="pt-4">
+        <div className="flex items-center gap-2 mb-6">
+          <div className="w-3 h-3 rounded-full bg-[#121212]" />
+          <h2 className="text-xl font-bold text-[#121212] tracking-tight">
+            Explore All Wallpapers
+          </h2>
+        </div>
+
         <WallpaperGrid
           initialWallpapers={allWallpapers}
           categories={categories}

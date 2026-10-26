@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Heart, Trash2, Sparkles, ArrowRight } from "lucide-react";
-import { Wallpaper, CategoryInfo } from "@/types/wallpaper";
+import { Heart, Trash2, ArrowRight } from "lucide-react";
+import { Wallpaper } from "@/types/wallpaper";
 import WallpaperCard from "@/components/WallpaperCard";
 import WallpaperModal from "@/components/WallpaperModal";
 
@@ -19,7 +19,6 @@ export default function FavoritesPage() {
         if (stored) {
           const ids: string[] = JSON.parse(stored);
           if (Array.isArray(ids) && ids.length > 0) {
-            // Fetch wallpaper data from API
             const res = await fetch("/api/wallpapers?limit=5000");
             const data = await res.json();
             const allWps: Wallpaper[] = data.items || [];
@@ -47,60 +46,62 @@ export default function FavoritesPage() {
 
   return (
     <div className="space-y-8">
-      {/* Header Banner */}
-      <div className="rounded-2xl glass-panel p-6 sm:p-8 border border-white/10 relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      {/* Header Banner - White with Inset Hairline Border */}
+      <div className="rounded-[10px] bg-white p-6 sm:p-8 border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 rounded-lg bg-rose-600/30 border border-rose-500/40 flex items-center justify-center text-rose-300">
-              <Heart className="w-4 h-4 fill-rose-400 text-rose-400" />
+            <div className="w-8 h-8 rounded-[10px] bg-[#ff2b3a]/10 text-[#ff2b3a] flex items-center justify-center">
+              <Heart className="w-4 h-4 fill-[#ff2b3a]" />
             </div>
-            <span className="text-xs font-bold uppercase tracking-wider text-rose-400">
-              Personal Collection
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#ff2b3a]">
+              Saved Bookmarks
             </span>
           </div>
 
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
-            Saved Wallpapers
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#121212] tracking-tight">
+            My Saved Wallpapers
           </h1>
-          <p className="text-sm text-gray-400 mt-1">
-            {favorites.length} wallpaper{favorites.length === 1 ? "" : "s"} bookmarked locally on this device.
+          <p className="text-[14px] text-[#474645] mt-1">
+            {favorites.length} wallpaper{favorites.length === 1 ? "" : "s"} bookmarked in your local collection.
           </p>
         </div>
 
         {favorites.length > 0 && (
           <button
             onClick={clearAllFavorites}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/20 transition-colors"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-[32px] text-xs font-medium bg-[#f6f4ef] hover:bg-[#edeae2] text-[#ff2b3a] border border-[#e5d5c3] transition-colors"
           >
             <Trash2 className="w-3.5 h-3.5" />
-            <span>Clear Favorites</span>
+            <span>Clear Collection</span>
           </button>
         )}
       </div>
 
       {/* Grid or Empty State */}
       {loading ? (
-        <div className="text-center py-24">
-          <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-xs text-gray-400">Loading your saved favorites...</p>
+        <div className="text-center py-20">
+          <div className="w-6 h-6 border-2 border-[#121212] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+          <p className="text-xs text-[#7e7e7d]">Loading saved wallpapers...</p>
         </div>
       ) : favorites.length === 0 ? (
-        <div className="text-center py-24 rounded-2xl glass-panel border border-white/10 p-8">
-          <Heart className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-white">No saved wallpapers yet</h3>
-          <p className="text-xs text-gray-400 mt-1 max-w-sm mx-auto">
-            Click the heart icon on any wallpaper while browsing to save it here for quick access.
+        <div className="text-center py-20 rounded-[10px] bg-white border border-[#f2f0ed] shadow-[inset_0_0_0_1px_#f2f0ed] p-8 space-y-3">
+          <span className="text-4xl block">🤍</span>
+          <h3 className="text-base font-bold text-[#121212]">No saved wallpapers yet</h3>
+          <p className="text-xs text-[#7e7e7d] max-w-sm mx-auto">
+            Click the heart icon on any wallpaper card while browsing to pin it here.
           </p>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30 transition-all"
-          >
-            <span>Explore Wallpapers</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+          <div>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 mt-3 px-5 py-2.5 rounded-[32px] text-xs font-semibold bg-[#121212] hover:bg-[#2c2c2c] text-white transition-all shadow-sm"
+            >
+              <span>Explore Wallpapers</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {favorites.map((wp) => (
             <WallpaperCard
               key={wp.id}

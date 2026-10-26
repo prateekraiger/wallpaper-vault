@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { CheckCircle2, AlertCircle, Info, Heart, Download } from "lucide-react";
+import { CheckCircle2, Info, Heart, Download } from "lucide-react";
 
 export interface ToastMessage {
   id: string;
@@ -39,22 +39,33 @@ export default function ToastContainer() {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none">
       {toasts.map((t) => (
         <div
           key={t.id}
-          className="flex items-center gap-3 px-4 py-3 rounded-2xl glass-panel shadow-2xl border border-white/15 text-xs text-white pointer-events-auto animate-in slide-in-from-bottom-5 duration-300 backdrop-blur-xl bg-[#0e1628]/90"
+          className="flex items-center gap-3 px-4 py-2.5 rounded-[10px] bg-white text-[#121212] border border-[#f2f0ed] shadow-[0_4px_20px_rgba(0,0,0,0.06)] text-xs pointer-events-auto animate-in slide-in-from-bottom-3 duration-200"
+          style={{
+            boxShadow: "inset 0 0 0 1px #f2f0ed, 0 4px 16px rgba(0, 0, 0, 0.05)",
+          }}
         >
           {t.type === "heart" ? (
-            <Heart className="w-4 h-4 text-rose-400 fill-rose-400 shrink-0" />
+            <span className="w-6 h-6 rounded-full bg-[#ff58ae]/15 flex items-center justify-center shrink-0">
+              <Heart className="w-3.5 h-3.5 text-[#ff2b3a] fill-[#ff2b3a]" />
+            </span>
           ) : t.type === "download" ? (
-            <Download className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span className="w-6 h-6 rounded-full bg-[#00c978]/15 flex items-center justify-center shrink-0">
+              <Download className="w-3.5 h-3.5 text-[#00c978]" />
+            </span>
           ) : t.type === "info" ? (
-            <Info className="w-4 h-4 text-indigo-400 shrink-0" />
+            <span className="w-6 h-6 rounded-full bg-[#0086fc]/15 flex items-center justify-center shrink-0">
+              <Info className="w-3.5 h-3.5 text-[#0086fc]" />
+            </span>
           ) : (
-            <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" />
+            <span className="w-6 h-6 rounded-full bg-[#00ca48]/15 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#00ca48]" />
+            </span>
           )}
-          <span className="font-medium pr-1">{t.message}</span>
+          <span className="font-medium text-[#343433] pr-1">{t.message}</span>
         </div>
       ))}
     </div>
