@@ -19,22 +19,28 @@ import {
   Check,
   ZoomIn,
   ZoomOut,
-  Loader2
+  Loader2,
+  Compass
 } from "lucide-react";
 import { Wallpaper } from "@/types/wallpaper";
+import { showToast } from "@/components/Toast";
 
 interface WallpaperModalProps {
   wallpaper: Wallpaper | null;
+  allWallpapers?: Wallpaper[];
   onClose: () => void;
   onPrev?: () => void;
   onNext?: () => void;
+  onSelectRelated?: (wallpaper: Wallpaper) => void;
 }
 
 export default function WallpaperModal({
   wallpaper,
+  allWallpapers = [],
   onClose,
   onPrev,
   onNext,
+  onSelectRelated,
 }: WallpaperModalProps) {
   const [isLiked, setIsLiked] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -49,6 +55,7 @@ export default function WallpaperModal({
     // Reset download status on slide change
     setIsDownloading(false);
     setDownloadSuccess(false);
+    setIsZoomed(false);
 
     // Check favorite status
     try {
@@ -78,6 +85,11 @@ export default function WallpaperModal({
 
   if (!wallpaper) return null;
 
+  // Filter related wallpapers from same category
+  const relatedWallpapers = allWallpapers
+    .filter((w) => w.category === wallpaper.category && w.id !== wallpaper.id)
+    .slice(0, 6);
+
   const toggleLike = () => {
     try {
       const stored = localStorage.getItem("wallpaper_favorites");
@@ -87,9 +99,11 @@ export default function WallpaperModal({
       if (isLiked) {
         arr = arr.filter((id) => id !== wallpaper.id);
         setIsLiked(false);
+        showToast("Removed from Favorites", "info");
       } else {
         arr.push(wallpaper.id);
         setIsLiked(true);
+        showToast(`Saved "${wallpaper.title}" to Favorites`, "heart");
       }
       localStorage.setItem("wallpaper_favorites", JSON.stringify(arr));
       window.dispatchEvent(new Event("favorites-updated"));
@@ -101,6 +115,7 @@ export default function WallpaperModal({
   const handleDownload = async () => {
     if (isDownloading) return;
     setIsDownloading(true);
+    showToast(`Downloading "${wallpaper.title}" in full 4K resolution...`, "download");
 
     try {
       const downloadEndpoint = `/api/wallpaper/${wallpaper.id}?download=true`;
@@ -118,9 +133,9 @@ export default function WallpaperModal({
       window.URL.revokeObjectURL(blobUrl);
 
       setDownloadSuccess(true);
+      showToast(`Downloaded "${wallpaper.title}" successfully!`, "success");
       setTimeout(() => setDownloadSuccess(false), 3000);
     } catch (err) {
-      // Fallback direct link download
       const link = document.createElement("a");
       link.href = `/api/wallpaper/${wallpaper.id}?download=true`;
       link.download = wallpaper.filename || `wallpaper_${wallpaper.id}.jpg`;
@@ -136,6 +151,7 @@ export default function WallpaperModal({
     if (navigator.clipboard) {
       navigator.clipboard.writeText(window.location.origin + wallpaper.url);
       setCopied(true);
+      showToast("Wallpaper link copied to clipboard!", "success");
       setTimeout(() => setCopied(false), 2000);
     }
   };
@@ -146,30 +162,30 @@ export default function WallpaperModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/92 backdrop-blur-2xl animate-in fade-in duration-200">
       {/* Background click to close */}
       <div className="absolute inset-0" onClick={onClose} />
 
       {/* Main Container */}
-      <div className="relative z-10 w-full max-w-6xl max-h-[95vh] rounded-2xl glass-panel overflow-hidden flex flex-col md:flex-row shadow-2xl border border-white/10">
+      <div className="relative z-10 w-full max-w-6xl max-h-[95vh] rounded-3xl glass-panel overflow-hidden flex flex-col md:flex-row shadow-2xl border border-white/10">
         {/* Close Button Top Right */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-30 p-2.5 rounded-full bg-black/60 hover:bg-black/90 text-gray-300 hover:text-white border border-white/10 backdrop-blur-md transition-colors"
+          className="absolute top-4 right-4 z-30 p-2.5 rounded-full bg-black/70 hover:bg-black text-gray-300 hover:text-white border border-white/15 backdrop-blur-md transition-colors"
           title="Close (Esc)"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Left / Center: Wallpaper Preview Display */}
-        <div className="relative flex-1 bg-black/60 flex items-center justify-center min-h-[350px] md:min-h-[600px] overflow-hidden select-none">
+        <div className="relative flex-1 bg-black/70 flex flex-col items-center justify-between min-h-[350px] md:min-h-[620px] overflow-hidden select-none">
           <div
-            className={`relative w-full h-full flex items-center justify-center p-4 transition-all duration-300 ${
+            className={`relative w-full flex-1 flex items-center justify-center p-4 transition-all duration-300 ${
               isZoomed ? "cursor-zoom-out scale-125" : "cursor-zoom-in"
             }`}
             onClick={() => setIsZoomed(!isZoomed)}
           >
-            <div className="relative w-full h-[65vh] md:h-[80vh] flex items-center justify-center">
+            <div className="relative w-full h-[55vh] md:h-[72vh] flex items-center justify-center">
               <Image
                 src={wallpaper.url}
                 alt={wallpaper.title}
@@ -181,14 +197,20 @@ export default function WallpaperModal({
             </div>
           </div>
 
-          {/* Zoom Toggle Pill */}
-          <button
-            onClick={() => setIsZoomed(!isZoomed)}
-            className="absolute bottom-4 left-4 p-2 rounded-lg bg-black/60 text-gray-300 hover:text-white backdrop-blur-md border border-white/10 text-xs flex items-center gap-1.5 transition-colors"
-          >
-            {isZoomed ? <ZoomOut className="w-3.5 h-3.5" /> : <ZoomIn className="w-3.5 h-3.5" />}
-            <span>{isZoomed ? "Fit Screen" : "Zoom"}</span>
-          </button>
+          {/* Bottom Bar inside image area */}
+          <div className="w-full px-4 py-3 bg-black/60 border-t border-white/5 flex items-center justify-between z-20">
+            <button
+              onClick={() => setIsZoomed(!isZoomed)}
+              className="p-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white backdrop-blur-md border border-white/10 text-xs flex items-center gap-1.5 transition-colors"
+            >
+              {isZoomed ? <ZoomOut className="w-3.5 h-3.5" /> : <ZoomIn className="w-3.5 h-3.5" />}
+              <span>{isZoomed ? "Fit Screen" : "Zoom 100%"}</span>
+            </button>
+
+            <span className="text-[11px] text-gray-400 font-mono hidden sm:inline">
+              Use ← and → arrow keys to navigate
+            </span>
+          </div>
 
           {/* Navigation Arrows */}
           {onPrev && (
@@ -197,7 +219,7 @@ export default function WallpaperModal({
                 e.stopPropagation();
                 onPrev();
               }}
-              className="absolute left-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md border border-white/10 transition-transform hover:scale-110"
+              className="absolute left-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md border border-white/10 transition-transform hover:scale-110 active:scale-95"
               title="Previous (Left Arrow)"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -210,7 +232,7 @@ export default function WallpaperModal({
                 e.stopPropagation();
                 onNext();
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md border border-white/10 transition-transform hover:scale-110"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md border border-white/10 transition-transform hover:scale-110 active:scale-95"
               title="Next (Right Arrow)"
             >
               <ChevronRight className="w-5 h-5" />
@@ -219,12 +241,12 @@ export default function WallpaperModal({
         </div>
 
         {/* Right: Metadata & Actions Panel */}
-        <div className="w-full md:w-80 lg:w-96 bg-[#0c1322] border-t md:border-t-0 md:border-l border-white/10 flex flex-col justify-between overflow-y-auto max-h-[45vh] md:max-h-[85vh] p-6">
+        <div className="w-full md:w-80 lg:w-96 bg-[#0a0f1d] border-t md:border-t-0 md:border-l border-white/10 flex flex-col justify-between overflow-y-auto max-h-[50vh] md:max-h-[85vh] p-6 space-y-6">
           <div className="space-y-6">
             {/* Header / Title */}
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+                <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
                   {wallpaper.device === "Desktop" ? (
                     <>
                       <Monitor className="w-3.5 h-3.5" /> Desktop
@@ -248,34 +270,34 @@ export default function WallpaperModal({
                 </Link>
               </div>
 
-              <h2 className="text-lg font-bold text-white leading-snug">
+              <h2 className="text-xl font-bold text-white leading-snug">
                 {wallpaper.title}
               </h2>
             </div>
 
             {/* Quick Specs Grid */}
-            <div className="grid grid-cols-2 gap-2.5 p-3.5 rounded-xl bg-white/[0.03] border border-white/5 text-xs">
+            <div className="grid grid-cols-2 gap-2.5 p-3.5 rounded-2xl bg-white/[0.03] border border-white/5 text-xs">
               <div>
                 <span className="text-gray-400 block text-[11px]">Resolution</span>
-                <span className="font-semibold text-gray-200">
+                <span className="font-bold text-gray-200">
                   {wallpaper.width} × {wallpaper.height}
                 </span>
               </div>
               <div>
                 <span className="text-gray-400 block text-[11px]">Aspect Ratio</span>
-                <span className="font-semibold text-gray-200 font-mono">
+                <span className="font-bold text-gray-200 font-mono">
                   {wallpaper.aspectRatio}
                 </span>
               </div>
               <div>
                 <span className="text-gray-400 block text-[11px]">File Size</span>
-                <span className="font-semibold text-gray-200">
+                <span className="font-bold text-gray-200">
                   {formatFileSize(wallpaper.sizeBytes)}
                 </span>
               </div>
               <div>
                 <span className="text-gray-400 block text-[11px]">Format</span>
-                <span className="font-semibold text-gray-200 uppercase">
+                <span className="font-bold text-gray-200 uppercase">
                   {wallpaper.format}
                 </span>
               </div>
@@ -284,14 +306,14 @@ export default function WallpaperModal({
             {/* Tags & Colors */}
             <div className="space-y-3">
               <div>
-                <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-2">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-2">
                   Color Palette
                 </span>
                 <div className="flex items-center gap-2">
                   {wallpaper.colorPalette?.map((c, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/5 border border-white/10"
+                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10"
                     >
                       <span
                         className="w-3 h-3 rounded-full border border-white/20 shadow-sm"
@@ -307,14 +329,14 @@ export default function WallpaperModal({
 
               {wallpaper.tags && wallpaper.tags.length > 0 && (
                 <div>
-                  <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-2">
+                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-2">
                     Tags
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {wallpaper.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="text-[11px] px-2 py-0.5 rounded-md bg-white/5 text-gray-300 border border-white/5"
+                        className="text-[11px] px-2.5 py-0.5 rounded-md bg-white/5 text-gray-300 border border-white/5"
                       >
                         #{tag}
                       </span>
@@ -324,56 +346,83 @@ export default function WallpaperModal({
               )}
             </div>
 
-            {/* How to set as wallpaper helper toggle */}
+            {/* How to set as wallpaper helper */}
             <div>
               <button
                 onClick={() => setShowHowTo(!showHowTo)}
-                className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 font-medium"
               >
                 <Info className="w-3.5 h-3.5" />
                 <span>How to set as wallpaper?</span>
               </button>
 
               {showHowTo && (
-                <div className="mt-2.5 p-3 rounded-lg bg-indigo-950/40 border border-indigo-500/20 text-xs text-gray-300 space-y-1.5 animate-in fade-in duration-200">
+                <div className="mt-2.5 p-3.5 rounded-xl bg-indigo-950/40 border border-indigo-500/20 text-xs text-gray-300 space-y-1.5 animate-in fade-in duration-200">
                   <p>
-                    <strong>Windows / Mac:</strong> Download the image, right-click the saved file, and select <em>&quot;Set as desktop background&quot;</em>.
+                    <strong>Windows / Mac:</strong> Download the file, right-click the saved image, and select <em>&quot;Set as desktop background&quot;</em>.
                   </p>
                   <p>
-                    <strong>iPhone / Android:</strong> Download or long-press the image to save to Photos, then open Settings &gt; Wallpaper to set as Lock/Home screen.
+                    <strong>iPhone / Android:</strong> Download to Photos, open Settings &gt; Wallpaper to set as Lock/Home Screen.
                   </p>
                 </div>
               )}
             </div>
+
+            {/* Related Wallpapers Row */}
+            {relatedWallpapers.length > 0 && onSelectRelated && (
+              <div className="pt-2 border-t border-white/5">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-gray-300 mb-2.5">
+                  <Compass className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>More in {wallpaper.category}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {relatedWallpapers.map((rel) => (
+                    <div
+                      key={rel.id}
+                      onClick={() => onSelectRelated(rel)}
+                      className="relative aspect-video rounded-lg overflow-hidden border border-white/10 hover:border-indigo-500 cursor-pointer transition-all transform hover:scale-105"
+                    >
+                      <Image
+                        src={rel.thumbUrl}
+                        alt={rel.title}
+                        fill
+                        sizes="100px"
+                        className="object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons (Bottom) */}
-          <div className="pt-6 space-y-2.5">
+          <div className="pt-6 space-y-2.5 border-t border-white/5">
             <button
               onClick={handleDownload}
               disabled={isDownloading}
-              className={`w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg transform active:scale-98 transition-all ${
+              className={`w-full py-3.5 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-xl transform active:scale-98 transition-all ${
                 downloadSuccess
                   ? "bg-green-600 text-white shadow-green-600/30"
                   : isDownloading
                   ? "bg-indigo-700 text-indigo-200 cursor-wait"
-                  : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/30"
+                  : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/40"
               }`}
             >
               {isDownloading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Preparing Download...</span>
+                  <span>Downloading Original Image...</span>
                 </>
               ) : downloadSuccess ? (
                 <>
                   <Check className="w-4 h-4 text-white" />
-                  <span>Downloaded Successfully!</span>
+                  <span>Saved to Downloads!</span>
                 </>
               ) : (
                 <>
                   <Download className="w-4 h-4" />
-                  <span>Download Original {wallpaper.width}×{wallpaper.height}</span>
+                  <span>Download Full Resolution ({wallpaper.width}×{wallpaper.height})</span>
                 </>
               )}
             </button>
@@ -381,19 +430,19 @@ export default function WallpaperModal({
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={toggleLike}
-                className={`py-2.5 px-3 rounded-xl text-xs font-medium flex items-center justify-center gap-2 border transition-all ${
+                className={`py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 border transition-all ${
                   isLiked
-                    ? "bg-red-500/15 text-red-300 border-red-500/30"
+                    ? "bg-rose-500/15 text-rose-300 border-rose-500/30"
                     : "bg-white/5 text-gray-300 hover:text-white border-white/10 hover:bg-white/10"
                 }`}
               >
-                <Heart className={`w-3.5 h-3.5 ${isLiked ? "fill-red-500 text-red-500" : ""}`} />
+                <Heart className={`w-3.5 h-3.5 ${isLiked ? "fill-rose-500 text-rose-500" : ""}`} />
                 <span>{isLiked ? "Saved" : "Favorite"}</span>
               </button>
 
               <button
                 onClick={handleShare}
-                className="py-2.5 px-3 rounded-xl text-xs font-medium bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10 flex items-center justify-center gap-2 transition-all"
+                className="py-2.5 px-3 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10 flex items-center justify-center gap-2 transition-all"
               >
                 {copied ? (
                   <>

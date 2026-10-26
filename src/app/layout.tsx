@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ToastContainer from "@/components/Toast";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,13 +32,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.variable} min-h-screen flex flex-col bg-[#070a10] text-gray-100 antialiased`}>
+    <html lang="en" className="dark scroll-smooth">
+      <body className={`${inter.variable} min-h-screen flex flex-col bg-[#070a10] text-gray-100 antialiased selection:bg-indigo-500 selection:text-white`}>
         <Header />
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {children}
         </main>
         <Footer />
+        <ToastContainer />
       </body>
     </html>
   );
