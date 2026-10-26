@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Download, Heart, Maximize2, Monitor, Smartphone, Sparkles, Moon } from "lucide-react";
+import { Download, Heart, Maximize2, Monitor, Smartphone, Sparkles, Moon, Check, Loader2 } from "lucide-react";
 import { Wallpaper } from "@/types/wallpaper";
 
 interface WallpaperCardProps {
@@ -13,6 +13,8 @@ interface WallpaperCardProps {
 export default function WallpaperCard({ wallpaper, onPreview }: WallpaperCardProps) {
   const [isLiked, setIsLiked] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
 
   useEffect(() => {
     try {
@@ -49,14 +51,39 @@ export default function WallpaperCard({ wallpaper, onPreview }: WallpaperCardPro
     }
   };
 
-  const handleDownload = (e: React.MouseEvent) => {
+  const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const link = document.createElement("a");
-    link.href = wallpaper.url;
-    link.download = wallpaper.filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (isDownloading) return;
+
+    setIsDownloading(true);
+    try {
+      const downloadEndpoint = `/api/wallpaper/${wallpaper.id}?download=true`;
+      const response = await fetch(downloadEndpoint);
+      if (!response.ok) throw new Error("Network response was not ok");
+      
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = wallpaper.filename || `wallpaper_${wallpaper.id}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+
+      setDownloadSuccess(true);
+      setTimeout(() => setDownloadSuccess(false), 2500);
+    } catch (err) {
+      // Fallback direct download
+      const link = document.createElement("a");
+      link.href = `/api/wallpaper/${wallpaper.id}?download=true`;
+      link.download = wallpaper.filename || `wallpaper_${wallpaper.id}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   // Determine card aspect ratio classes
@@ -150,7 +177,7 @@ export default function WallpaperCard({ wallpaper, onPreview }: WallpaperCardPro
           </button>
         </div>
 
-        {/* Hover Action Center Buttons */}
+        {/* Hover Action Center Buttons (Desktop) */}
         <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
           <button
             onClick={() => onPreview(wallpaper)}
@@ -161,10 +188,17 @@ export default function WallpaperCard({ wallpaper, onPreview }: WallpaperCardPro
           </button>
           <button
             onClick={handleDownload}
-            className="pointer-events-auto p-3 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-md border border-white/20 transform hover:scale-110 transition-all"
+            disabled={isDownloading}
+            className="pointer-events-auto p-3 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-md border border-white/20 transform hover:scale-110 transition-all flex items-center justify-center"
             title="Download Wallpaper"
           >
-            <Download className="w-4 h-4" />
+            {isDownloading ? (
+              <Loader2 className="w-4 h-4 animate-spin text-indigo-300" />
+            ) : downloadSuccess ? (
+              <Check className="w-4 h-4 text-green-400" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
           </button>
         </div>
 
@@ -182,19 +216,51 @@ export default function WallpaperCard({ wallpaper, onPreview }: WallpaperCardPro
         </div>
       </div>
 
-      {/* Static Footer (When not hovering) */}
-      <div className="p-3 bg-[#0c121e]/90 flex items-center justify-between border-t border-white/5 group-hover:hidden">
-        <div className="truncate mr-2">
+      {/* Static Footer Bar with Always-Available Direct Download Button */}
+      <div className="p-2.5 sm:p-3 bg-[#0c121e]/95 flex items-center justify-between border-t border-white/5">
+        <div className="truncate mr-2 flex-1">
           <p className="text-xs font-medium text-gray-200 truncate">
             {wallpaper.title}
           </p>
-          <p className="text-[10px] text-gray-400 truncate">
-            {wallpaper.category}
-          </p>
+          <div className="flex items-center gap-1.5 text-[10px] text-gray-400 mt-0.5">
+            <span className="truncate">{wallpaper.category}</span>
+            <span>•</span>
+            <span className="font-mono text-gray-500 shrink-0">
+              {wallpaper.width}×{wallpaper.height}
+            </span>
+          </div>
         </div>
-        <span className="text-[10px] font-mono text-gray-500 shrink-0">
-          {wallpaper.aspectRatio}
-        </span>
+
+        {/* Dedicated Always-Available Download Button */}
+        <button
+          onClick={handleDownload}
+          disabled={isDownloading}
+          className={`shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            downloadSuccess
+              ? "bg-green-500/20 text-green-300 border border-green-500/40"
+              : isDownloading
+              ? "bg-indigo-600/30 text-indigo-300 border border-indigo-500/30"
+              : "bg-indigo-600/20 hover:bg-indigo-600 text-indigo-200 hover:text-white border border-indigo-500/30 shadow-sm"
+          }`}
+          title="Download full resolution wallpaper"
+        >
+          {isDownloading ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <span className="hidden sm:inline text-[11px]">Saving...</span>
+            </>
+          ) : downloadSuccess ? (
+            <>
+              <Check className="w-3.5 h-3.5 text-green-400" />
+              <span className="hidden sm:inline text-[11px]">Saved!</span>
+            </>
+          ) : (
+            <>
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline text-[11px]">Download</span>
+            </>
+          )}
+        </button>
       </div>
     </div>
   );

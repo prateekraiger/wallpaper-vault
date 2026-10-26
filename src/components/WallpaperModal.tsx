@@ -18,7 +18,8 @@ import {
   ExternalLink,
   Check,
   ZoomIn,
-  ZoomOut
+  ZoomOut,
+  Loader2
 } from "lucide-react";
 import { Wallpaper } from "@/types/wallpaper";
 
@@ -39,9 +40,15 @@ export default function WallpaperModal({
   const [copied, setCopied] = useState(false);
   const [showHowTo, setShowHowTo] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
 
   useEffect(() => {
     if (!wallpaper) return;
+
+    // Reset download status on slide change
+    setIsDownloading(false);
+    setDownloadSuccess(false);
 
     // Check favorite status
     try {
@@ -91,13 +98,38 @@ export default function WallpaperModal({
     }
   };
 
-  const handleDownload = () => {
-    const link = document.createElement("a");
-    link.href = wallpaper.url;
-    link.download = wallpaper.filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownload = async () => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+
+    try {
+      const downloadEndpoint = `/api/wallpaper/${wallpaper.id}?download=true`;
+      const response = await fetch(downloadEndpoint);
+      if (!response.ok) throw new Error("Download request failed");
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = wallpaper.filename || `wallpaper_${wallpaper.id}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+
+      setDownloadSuccess(true);
+      setTimeout(() => setDownloadSuccess(false), 3000);
+    } catch (err) {
+      // Fallback direct link download
+      const link = document.createElement("a");
+      link.href = `/api/wallpaper/${wallpaper.id}?download=true`;
+      link.download = wallpaper.filename || `wallpaper_${wallpaper.id}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const handleShare = () => {
@@ -319,10 +351,31 @@ export default function WallpaperModal({
           <div className="pt-6 space-y-2.5">
             <button
               onClick={handleDownload}
-              className="w-full py-3 px-4 rounded-xl font-semibold text-sm bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 transform active:scale-98 transition-all"
+              disabled={isDownloading}
+              className={`w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg transform active:scale-98 transition-all ${
+                downloadSuccess
+                  ? "bg-green-600 text-white shadow-green-600/30"
+                  : isDownloading
+                  ? "bg-indigo-700 text-indigo-200 cursor-wait"
+                  : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/30"
+              }`}
             >
-              <Download className="w-4 h-4" />
-              <span>Download Original {wallpaper.width}×{wallpaper.height}</span>
+              {isDownloading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Preparing Download...</span>
+                </>
+              ) : downloadSuccess ? (
+                <>
+                  <Check className="w-4 h-4 text-white" />
+                  <span>Downloaded Successfully!</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" />
+                  <span>Download Original {wallpaper.width}×{wallpaper.height}</span>
+                </>
+              )}
             </button>
 
             <div className="grid grid-cols-2 gap-2">
